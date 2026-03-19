@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Estate Building Admin - Create Building</title>
+	<th:block th:replace="~{admin/common/header :: header}"></th:block>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body class="no-skin" style="font-family: 'Abel', sans-serif;">
+	<th:block th:replace="~{admin/common/menu :: menu}"></th:block>
+
+
+
+	<div class="main-container" id="main-container">
+		<script type="text/javascript">
+			try {
+				ace.settings.check('main-container', 'fixed')
+			} catch (e) {
+			}
+		</script>
+		<th:block th:replace="~{admin/common/sidebar :: sidebar}"></th:block>
+
+
+		<div class="main-content">
+			<div class="main-content-inner">
+				<div class="breadcrumbs" id="breadcrumbs">
+					<script type="text/javascript">
+						try {
+							ace.settings.check("breadcrumbs", "fixed");
+						} catch (e) {
+						}
+					</script>
+
+					<ul class="breadcrumb">
+						<li>
+							<i class="ace-icon fa fa-home home-icon"></i>
+							<a href="#">Home</a>
+						</li>
+						<li class="active">Dashboard</li>
+					</ul>
+					<!-- /.breadcrumb -->
+
+					<div class="nav-search" id="nav-search">
+						<form class="form-search">
+							<span class="input-icon">
+								<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input"
+									autocomplete="off" />
+								<i class="ace-icon fa fa-search nav-search-icon"></i>
+							</span>
+						</form>
+					</div>
+					<!-- /.nav-search -->
+				</div>
+				<div class="page-content">
+					<div class="page-header">
+						<h1>
+							Thông Tin Tòa Nhà
+							<small>
+								<i class="ace-icon fa fa-angle-double-right"></i>
+								overview &amp; stats
+							</small>
+						</h1>
+					</div>
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="widget-box">
+								<div class="widget-header">
+									<h4 class="widget-title">Thông Tin Tòa Nhà</h4>
+								</div>
+								<div class="widget-body">
+									<div class="widget-main no-padding">
+										<form class="form-horizontal" role="form" id="form-edit-building">
+											<div class="form-group">
+												<label class="col-sm-3 control-label no-padding-right " for="name">Tên Tòa
+													Nhà</label>
+												<div class="col-sm-9">
+													<div class="col-xs-10 col-sm-5">
+														<input type="text" id="name" name="name" class="form-control" placeholder="Tên Tòa Nhà ...">
+														<span class="error-message" id="noName" style="display: none; color: red;">Vui lòng nhập tên
+															tòa
+															nhà</span>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-3 control-label no-padding-right" for="districtId">
+													Quận
+												</label>
+												<div class="col-sm-5">
+													<div class="col-xs-10 col-sm-5">
+														<select class="form-control" id="select-district" name="districtId">
+															<option value="">-Chọn Quận-</option>
+														</select>
+														<span class="error-message" id="noDistrict" style="display: none; color: red;">Vui lòng chọn
+															quận</span>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-3 control-label no-padding-right " for="ward">Phường</label>
+												<div class="col-sm-9">
+													<div class="col-xs-10 col-sm-5">
+														<input type="text" id="ward" name="ward" placeholder="Tên Phường ..." class="form-control">
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-3 control-label no-padding-right " for="street">Đường</label>
+												<div class="col-sm-9">
+													<div class="col-xs-10 col-sm-5">
+														<input type="text" id="street" name="street" class="form-control"
+															placeholder="Tên Đường ...">
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-3 control-label no-padding-right " for="structure">Kết
+													Cấu</label>
+												<div class="col-sm-9">
+													<div class="col-xs-10 col-sm-5">
+														<input type="text" id="structure" name="structure" class="form-control"
+															placeholder="Kết Cấu ...">
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+
+												<label class="col-sm-3 control-label no-padding-right " for="numberOfBasements">Số Tầng
+													Hầm</label>
+												<div class="col-sm-9">
+													<div class="col-xs-10 col-sm-5">
+														<input type="number" id="numberOfBasement" name="numberOfBasement" class="form-control"
+															placeholder="Số Tầng Hầm ...">
+														<span class="error-message" id="noNumberOfBasement" style="display: none; color: red;">Vui
+															lòng nhập số tầng
+															hầm</span>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-3 control-label no-padding-right " for="floorArea">Diện
+													Tích Sàn</label>
+												<div class="col-sm-9">
+													<div class="col-xs-10 col-sm-5">
+														<input type="number" id="floorArea" name="floorArea" class="form-control"
+															placeholder="Diện Tích Sàn ...">
+														<span class="error-message" id="noFloorArea" style="display: none; color: red;">Vui lòng
+															nhập diện tích
+															sàn</span>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+
+												<label class="col-sm-3 control-label no-padding-right " for="direction">Hướng</label>
+												<div class="col-sm-9">
+													<div class="col-xs-10 col-sm-5">
+														<input type="text" id="direction" name="direction" class="form-control"
+															placeholder="Hướng ...">
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+
+												<label class="col-sm-3 control-label no-padding-right " for="level">Hạng</label>
+												<div class="col-sm-9">
+													<div class="col-xs-10 col-sm-5"><input type="text" id="level" name="level"
+															class="form-control" placeholder="Hạng ..."></div>
+
+												</div>
+											</div>
+
+											<div class="form-group">
+
+												<label class="col-sm-3 control-label no-padding-right" for="rentArea">
+													Diện Tích Thuê
+												</label>
+
+												<div class="col-sm-9">
+
+													<div class="col-xs-10 col-sm-5">
+														<input type="text" id="rentArea" name="rentArea" class="form-control"
+															placeholder="100,200,300,...">
+														<span class="error-message" id="noRentArea" style="display: none; color: red;">Vui lòng nhập
+															diện tích
+															thuê</span>
+													</div>
+												</div>
+
+											</div>
+											<div class="form-group">
+
+												<label class="col-sm-3 control-label no-padding-right " for="rentPrice">Giá
+													Thuê</label>
+												<div class="col-sm-9">
+													<div class="col-xs-10 col-sm-5">
+														<input type="number" id="rentPrice" name="rentPrice" class="form-control"
+															placeholder="Giá Thuê ...">
+
+														<span class="error-message" id="noRentPrice" style="display: none; color: red;">Vui lòng
+															nhập giá
+															thuê</span>
+													</div>
+												</div>
+
+
+											</div>
+											<div class="form-group">
+
+												<label class="col-sm-3 control-label no-padding-right " for="priceDescription">Mô Tả
+													Giá</label>
+												<div class="col-sm-9">
+													<div class="col-xs-10 col-sm-5">
+														<input type="text" id="priceDescription" name="priceDescription" class="form-control"
+															placeholder="Mô Tả Giá ...">
+													</div>
+												</div>
+
+
+											</div>
+											<div class="form-group">
+
+												<label class="col-sm-3 control-label no-padding-right " for="serviceFee">Phí
+													Dịch Vụ</label>
+												<div class="col-sm-9">
+													<div class="col-xs-10 col-sm-5">
+														<input type="text" id="serviceFee" name="serviceFee" class="form-control"
+															placeholder="Phí Dịch Vụ ...">
+													</div>
+												</div>
+
+
+											</div>
+											<div class="form-group">
+
+												<label class="col-sm-3 control-label no-padding-right " for="carFee">Phí Ô
+													Tô</label>
+												<div class="col-sm-9">
+													<div class="col-xs-10 col-sm-5">
+														<input type="text" id="carFee" name="carFee" class="form-control"
+															placeholder="Phí Ô Tô ...">
+													</div>
+												</div>
+
+
+											</div>
+											<div class="form-group">
+
+												<label class="col-sm-3 control-label no-padding-right " for="overtimeFee">Phí
+													Ngoài
+													Giờ</label>
+												<div class="col-sm-9">
+													<div class="col-xs-10 col-sm-5">
+														<input type="text" id="overtimeFee" name="overtimeFee" class="form-control"
+															placeholder="Phí Ngoài Giờ ...">
+													</div>
+												</div>
+
+
+											</div>
+											<div class="form-group">
+
+												<label class="col-sm-3 control-label no-padding-right " for="managerName">Tên
+													Quản Lí</label>
+												<div class="col-sm-9">
+													<div class="col-xs-10 col-sm-5">
+														<input type="text" id="managerName" name="managerName" class="form-control"
+															placeholder="Tên Quản Lí ...">
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+
+												<label class="col-sm-3 control-label no-padding-right " for="managerPhone">SĐT
+													Quản Lí</label>
+												<div class="col-sm-9">
+													<div class="col-xs-10 col-sm-5">
+														<input type="text" id="managerPhone" name="managerPhoneNumber" class="form-control"
+															placeholder="SĐT Quản Lí ...">
+														<span class="error-message" id="noManagerPhone" style="display: none; color: red;">Vui lòng
+															nhập số điện thoại quản lí</span>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-3 control-label no-padding-right" for="buildingType">
+													Loại Tòa Nhà
+												</label>
+
+												<div class="col-sm-9">
+													<div class="col-xs-10 col-sm-5" id="list-renttypes">
+
+														<span class="error-message" id="noTypeCodes" style="display: none; color: red;">Vui lòng
+															chọn ít nhất một loại tòa nhà</span>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-3 control-label no-padding-right " for="brokerageFee">Phí
+													Môi
+													Giới</label>
+												<div class="col-sm-9">
+													<div class="col-xs-10 col-sm-5"><input type="text" id="brokerageFee" name="brokerageFee"
+															class="form-control" placeholder="Phí Môi Giới ...">
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+
+												<label class="col-sm-3 control-label no-padding-right " for="note">Ghi
+													Chú</label>
+												<div class="col-sm-9">
+													<div class="col-xs-10 col-sm-5">
+														<input type="text" id="note" name="note" class="form-control" placeholder="Ghi Chú ...">
+													</div>
+												</div>
+											</div>
+											<div class="form-actions center">
+												<a th:href="@{/admin/buildings/list}">
+													<button type="button" class="btn btn-sm btn-danger">
+														Hủy Thao Tác
+														<i class="ace-icon glyphicon glyphicon-remove icon-on-right bigger-110"></i>
+													</button>
+												</a>
+												<button type="button" class="btn btn-sm btn-success" onclick="" id="btn-add-building">
+													Xác Nhận
+													<i class="ace-icon fa fa-arrow-right icon-on-right bigger-110"></i>
+												</button>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div><!-- /.span -->
+			</div>
+		</div>
+		<!-- /.page-content -->
+	</div>
+	<!-- /.main-container -->
+
+	<th:block th:replace="~{admin/common/footer :: footer}"></th:block>
+	<th:block th:replace="~{admin/common/common-scripts :: jquery}"></th:block>
+
+
+	<script>
+		$(document).ready(function () {
+
+			function resetErrorMessages() {
+				document.querySelectorAll(".error-message").forEach(function (element) {
+					element.style.display = "none";
+				});
+			}
+
+			function validateForm(data) {
+				resetErrorMessages();
+				var isValid = true;
+				if (!data.name || data.name.trim() === "") {
+					document.getElementById("noName").style.display = "block";
+					isValid = false;
+				}
+				if (!data.districtId) {
+					document.getElementById("noDistrict").style.display = "block";
+					isValid = false;
+				}
+				if (!data.typeCodes || data.typeCodes.length === 0) {
+					document.getElementById("noTypeCodes").style.display = "block";
+					isValid = false;
+				}
+				if (!data.numberOfBasement || data.numberOfBasement <= 0) {
+					document.getElementById("noNumberOfBasement").style.display = "block";
+					isValid = false;
+				}
+
+				if (!data.floorArea || data.floorArea <= 0) {
+					document.getElementById("noFloorArea").style.display = "block";
+					isValid = false;
+				}
+				if (!data.rentArea || data.rentArea <= 0) {
+					document.getElementById("noRentArea").style.display = "block";
+					isValid = false;
+				}
+				if (!data.rentPrice || data.rentPrice <= 0) {
+					document.getElementById("noRentPrice").style.display = "block";
+					isValid = false;
+				}
+				if (!data.managerPhoneNumber) {
+					document.getElementById("noManagerPhone").style.display = "block";
+					isValid = false;
+				}
+				if (data.managerPhoneNumber && !/^\d{10}$/.test(data.managerPhoneNumber)) {
+					document.getElementById("noManagerPhone").textContent = "Số điện thoại phải có 10 chữ số";
+					document.getElementById("noManagerPhone").style.display = "block";
+					isValid = false;
+				}
+				return isValid;
+
+			}
+
+			$('#btn-add-building').click(function (e) {
+				e.preventDefault();
+				var formData = $('#form-edit-building').serializeArray();
+
+
+				var data = {};
+
+				$.each(formData, function (index, field) {
+					if (field.name !== "typeCodes") {
+						data[field.name] = field.value;
+					} else {
+						if (!data.typeCodes) {
+							data.typeCodes = [];
+						}
+						data.typeCodes.push(field.value);
+					}
+				});
+
+				if (!validateForm(data)) {
+					alert("Dữ liệu không hợp lệ. Hãy nhập lại!");
+					return;
+				}
+
+				console.log(data);
+				$.ajax({
+					url: "http://localhost:8081/buildings",
+					type: "POST",
+					contentType: "application/json",
+					data: JSON.stringify(data),
+
+					success: function (res) {
+						alert("Thêm building thành công");
+					},
+
+					error: function (err) {
+						console.log(err);
+						alert("Có lỗi xảy ra khi thêm building");
+					}
+				});
+
+
+			});
+		});
+	</script>
+
+
+</body>
+
+</html>
