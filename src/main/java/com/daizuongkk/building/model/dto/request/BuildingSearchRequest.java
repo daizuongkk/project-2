@@ -5,13 +5,15 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
+import com.daizuongkk.building.model.dto.AbstractDTO;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BuildingSearchRequest {
+public class BuildingSearchRequest extends AbstractDTO {
 	String name;
 	String ward;
 	String street;
@@ -25,7 +27,7 @@ public class BuildingSearchRequest {
 	Long minRentPrice;
 	Long maxRentPrice;
 	String managerName;
-	String managerPhoneNumber;
+	String managerPhone;
 	Long staffId;
 	List<String> typeCodes;
 

@@ -11,7 +11,7 @@ import com.daizuongkk.building.entity.Building;
 public class ProductForm {
 	private Long id;
 	private String name;
-	private double price;
+	private Long price;
 
 	private boolean newProduct = false;
 

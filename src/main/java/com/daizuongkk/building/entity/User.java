@@ -1,13 +1,20 @@
 package com.daizuongkk.building.entity;
 
-import jakarta.persistence.*;
+import java.io.Serial;
+import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.io.Serial;
-import java.io.Serializable;
 
 @Entity
 @Table(name = "User")
@@ -15,7 +22,7 @@ import java.io.Serializable;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User extends BaseEntity implements Serializable {
+public class User extends BaseEntity {
 
 	@Serial
 	private static final long serialVersionUID = -2054386655979281969L;
@@ -50,6 +57,9 @@ public class User extends BaseEntity implements Serializable {
 	@Lob
 	@Column(name = "image", length = Integer.MAX_VALUE, nullable = true)
 	private byte[] image;
+
+	@OneToMany(mappedBy = "staff")
+	private List<AssignmentBuilding> assignmentBuilding;
 
 	public User(Long id, String userName, Boolean active, String userRole, String fullName, String phone) {
 		this.id = id;

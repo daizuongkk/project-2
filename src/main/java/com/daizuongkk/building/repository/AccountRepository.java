@@ -1,9 +1,9 @@
-package com.devon.building.repository;
+package com.daizuongkk.building.repository;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.devon.building.entity.User;
+import com.daizuongkk.building.entity.User;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

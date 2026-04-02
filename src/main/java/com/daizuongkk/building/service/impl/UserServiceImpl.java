@@ -1,6 +1,13 @@
 package com.daizuongkk.building.service.impl;
 
-import jakarta.persistence.*;
+import java.io.IOException;
+import java.util.Base64;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,10 +20,11 @@ import com.daizuongkk.building.pagination.PaginationResult;
 import com.daizuongkk.building.repository.UserRepository;
 import com.daizuongkk.building.service.UserService;
 
-import java.io.IOException;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 
 @Service
 @Transactional
@@ -116,6 +124,7 @@ public class UserServiceImpl implements UserService {
 		userRepository.save(user);
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public void delete(List<Long> ids) {
 		for (Long id : ids) {
@@ -123,5 +132,11 @@ public class UserServiceImpl implements UserService {
 			user.ifPresent(value -> value.setActive(false));
 			userRepository.flush();
 		}
+	}
+
+	@Override
+	public Map<Long, String> loadStaff() {
+		List<User> staffs = userRepository.findByUserRoleAndActiveTrue(SystemConstant.STAFF_ROLE);
+		return staffs.stream().collect(Collectors.toMap(User::getId, User::getUserName));
 	}
 }

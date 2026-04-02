@@ -1,6 +1,7 @@
 package com.daizuongkk.building.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.daizuongkk.building.entity.User;
 import com.daizuongkk.building.model.dto.UserDTO;
@@ -14,4 +15,6 @@ public interface UserService {
 	void update(UserDTO userDTO);
 
 	void delete(List<Long> ids);
+
+	Map<Long, String> loadStaff();
 }

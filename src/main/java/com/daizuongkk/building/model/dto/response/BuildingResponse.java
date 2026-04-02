@@ -20,7 +20,7 @@ public class BuildingResponse {
 	String address;
 	Long numberOfBasement;
 	String managerName;
-	String managerPhoneNumber;
+	String managerPhone;
 	Long floorArea;
 	String rentArea;
 	Long emptyArea;

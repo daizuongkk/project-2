@@ -77,7 +77,8 @@
 													Nhà</label>
 												<div class="col-sm-9">
 													<div class="col-xs-10 col-sm-5">
-														<input type="text" id="name" name="name" class="form-control" placeholder="Tên Tòa Nhà ...">
+														<input type="text" id="name" name="name" class="form-control" placeholder="Tên Tòa Nhà ..."
+															th:value="${building.name}">
 														<span class="error-message" id="noName" style="display: none; color: red;">Vui lòng nhập tên
 															tòa
 															nhà</span>
@@ -85,13 +86,17 @@
 												</div>
 											</div>
 											<div class="form-group">
-												<label class="col-sm-3 control-label no-padding-right" for="districtId">
+												<label class="col-sm-3 control-label no-padding-right" for="district">
 													Quận
 												</label>
 												<div class="col-sm-5">
 													<div class="col-xs-10 col-sm-5">
-														<select class="form-control" id="select-district" name="districtId">
+														<select class="form-control" id="select-district" name="district">
 															<option value="">-Chọn Quận-</option>
+															<option th:each="district : ${districts}" th:value="${district.key}"
+																th:selected="${district.key == building.district}" th:text="${district.value}">
+															</option>
+
 														</select>
 														<span class="error-message" id="noDistrict" style="display: none; color: red;">Vui lòng chọn
 															quận</span>
@@ -102,7 +107,8 @@
 												<label class="col-sm-3 control-label no-padding-right " for="ward">Phường</label>
 												<div class="col-sm-9">
 													<div class="col-xs-10 col-sm-5">
-														<input type="text" id="ward" name="ward" placeholder="Tên Phường ..." class="form-control">
+														<input type="text" id="ward" name="ward" placeholder="Tên phường..."
+															th:value="${building.ward}">
 													</div>
 												</div>
 											</div>
@@ -111,7 +117,7 @@
 												<div class="col-sm-9">
 													<div class="col-xs-10 col-sm-5">
 														<input type="text" id="street" name="street" class="form-control"
-															placeholder="Tên Đường ...">
+															placeholder="Tên Đường ..." th:value="${building.street}">
 													</div>
 												</div>
 											</div>
@@ -121,7 +127,7 @@
 												<div class="col-sm-9">
 													<div class="col-xs-10 col-sm-5">
 														<input type="text" id="structure" name="structure" class="form-control"
-															placeholder="Kết Cấu ...">
+															placeholder="Kết Cấu ..." th:value="${building.structure}">
 													</div>
 												</div>
 											</div>
@@ -132,7 +138,7 @@
 												<div class="col-sm-9">
 													<div class="col-xs-10 col-sm-5">
 														<input type="number" id="numberOfBasement" name="numberOfBasement" class="form-control"
-															placeholder="Số Tầng Hầm ...">
+															placeholder="Số Tầng Hầm ..." th:value="${building.numberOfBasement}">
 														<span class="error-message" id="noNumberOfBasement" style="display: none; color: red;">Vui
 															lòng nhập số tầng
 															hầm</span>
@@ -145,7 +151,7 @@
 												<div class="col-sm-9">
 													<div class="col-xs-10 col-sm-5">
 														<input type="number" id="floorArea" name="floorArea" class="form-control"
-															placeholder="Diện Tích Sàn ...">
+															placeholder="Diện Tích Sàn ..." th:value="${building.floorArea}">
 														<span class="error-message" id="noFloorArea" style="display: none; color: red;">Vui lòng
 															nhập diện tích
 															sàn</span>
@@ -158,7 +164,7 @@
 												<div class="col-sm-9">
 													<div class="col-xs-10 col-sm-5">
 														<input type="text" id="direction" name="direction" class="form-control"
-															placeholder="Hướng ...">
+															placeholder="Hướng ..." th:value="${building.direction}">
 													</div>
 												</div>
 											</div>
@@ -167,7 +173,7 @@
 												<label class="col-sm-3 control-label no-padding-right " for="level">Hạng</label>
 												<div class="col-sm-9">
 													<div class="col-xs-10 col-sm-5"><input type="text" id="level" name="level"
-															class="form-control" placeholder="Hạng ..."></div>
+															class="form-control" placeholder="Hạng ..." th:value="${building.level}"></div>
 
 												</div>
 											</div>
@@ -182,10 +188,9 @@
 
 													<div class="col-xs-10 col-sm-5">
 														<input type="text" id="rentArea" name="rentArea" class="form-control"
-															placeholder="100,200,300,...">
-														<span class="error-message" id="noRentArea" style="display: none; color: red;">Vui lòng nhập
-															diện tích
-															thuê</span>
+															placeholder="100,200,300,..." th:value="${building.rentArea}">
+														<span class="error-message" id="noRentArea" style="display: none; color: red;">Diện tích
+															thuê không hợp lệ</span>
 													</div>
 												</div>
 
@@ -197,7 +202,7 @@
 												<div class="col-sm-9">
 													<div class="col-xs-10 col-sm-5">
 														<input type="number" id="rentPrice" name="rentPrice" class="form-control"
-															placeholder="Giá Thuê ...">
+															placeholder="Giá Thuê ..." th:value="${building.price}">
 
 														<span class="error-message" id="noRentPrice" style="display: none; color: red;">Vui lòng
 															nhập giá
@@ -209,12 +214,13 @@
 											</div>
 											<div class="form-group">
 
-												<label class="col-sm-3 control-label no-padding-right " for="priceDescription">Mô Tả
+												<label class="col-sm-3 control-label no-padding-right " for="rentPriceDescription">Mô Tả
 													Giá</label>
 												<div class="col-sm-9">
 													<div class="col-xs-10 col-sm-5">
-														<input type="text" id="priceDescription" name="priceDescription" class="form-control"
-															placeholder="Mô Tả Giá ...">
+														<input type="text" id="rentPriceDescription" name="rentPriceDescription"
+															class="form-control" placeholder="Mô Tả Giá ..."
+															th:value="${building.rentPriceDescription}">
 													</div>
 												</div>
 
@@ -227,7 +233,7 @@
 												<div class="col-sm-9">
 													<div class="col-xs-10 col-sm-5">
 														<input type="text" id="serviceFee" name="serviceFee" class="form-control"
-															placeholder="Phí Dịch Vụ ...">
+															placeholder="Phí Dịch Vụ ..." th:value="${building.serviceFee}">
 													</div>
 												</div>
 
@@ -239,8 +245,8 @@
 													Tô</label>
 												<div class="col-sm-9">
 													<div class="col-xs-10 col-sm-5">
-														<input type="text" id="carFee" name="carFee" class="form-control"
-															placeholder="Phí Ô Tô ...">
+														<input type="text" id="carFee" name="carFee" class="form-control" placeholder="Phí Ô Tô ..."
+															th:value="${building.carFee}">
 													</div>
 												</div>
 
@@ -254,7 +260,7 @@
 												<div class="col-sm-9">
 													<div class="col-xs-10 col-sm-5">
 														<input type="text" id="overtimeFee" name="overtimeFee" class="form-control"
-															placeholder="Phí Ngoài Giờ ...">
+															placeholder="Phí Ngoài Giờ ..." th:value="${building.overtimeFee}">
 													</div>
 												</div>
 
@@ -267,7 +273,7 @@
 												<div class="col-sm-9">
 													<div class="col-xs-10 col-sm-5">
 														<input type="text" id="managerName" name="managerName" class="form-control"
-															placeholder="Tên Quản Lí ...">
+															placeholder="Tên Quản Lí ..." th:value="${building.managerName}">
 													</div>
 												</div>
 											</div>
@@ -277,8 +283,8 @@
 													Quản Lí</label>
 												<div class="col-sm-9">
 													<div class="col-xs-10 col-sm-5">
-														<input type="text" id="managerPhone" name="managerPhoneNumber" class="form-control"
-															placeholder="SĐT Quản Lí ...">
+														<input type="text" id="managerPhone" name="managerPhone" class="form-control"
+															placeholder="SĐT Quản Lí ..." th:value="${building.managerPhone}">
 														<span class="error-message" id="noManagerPhone" style="display: none; color: red;">Vui lòng
 															nhập số điện thoại quản lí</span>
 													</div>
@@ -291,7 +297,10 @@
 
 												<div class="col-sm-9">
 													<div class="col-xs-10 col-sm-5" id="list-renttypes">
-
+														<label th:each="type : ${typeCodes}" class='checkbox-inline'>
+															<input type='checkbox' name='typeCodes' th:value="${type.key}" th:text="${type.value}"
+																th:checked="${building != null and building.typeCodes != null and #lists.contains(building.typeCodes, type.key)}">
+														</label>
 														<span class="error-message" id="noTypeCodes" style="display: none; color: red;">Vui lòng
 															chọn ít nhất một loại tòa nhà</span>
 													</div>
@@ -303,7 +312,7 @@
 													Giới</label>
 												<div class="col-sm-9">
 													<div class="col-xs-10 col-sm-5"><input type="text" id="brokerageFee" name="brokerageFee"
-															class="form-control" placeholder="Phí Môi Giới ...">
+															class="form-control" placeholder="Phí Môi Giới ..." th:value="${building.brokerageFee}">
 													</div>
 												</div>
 											</div>
@@ -313,7 +322,8 @@
 													Chú</label>
 												<div class="col-sm-9">
 													<div class="col-xs-10 col-sm-5">
-														<input type="text" id="note" name="note" class="form-control" placeholder="Ghi Chú ...">
+														<input type="text" id="note" name="note" class="form-control" placeholder="Ghi Chú ..."
+															th:value="${building.note}">
 													</div>
 												</div>
 											</div>
@@ -324,7 +334,8 @@
 														<i class="ace-icon glyphicon glyphicon-remove icon-on-right bigger-110"></i>
 													</button>
 												</a>
-												<button type="button" class="btn btn-sm btn-success" onclick="" id="btn-add-building">
+												<button type="button" class="btn btn-sm btn-success" onclick="" id="btn-add-building"
+													th:text="${building.id == null ? 'Thêm Tòa Nhà' : 'Cập Nhật' }">
 													Xác Nhận
 													<i class="ace-icon fa fa-arrow-right icon-on-right bigger-110"></i>
 												</button>
@@ -362,7 +373,7 @@
 					document.getElementById("noName").style.display = "block";
 					isValid = false;
 				}
-				if (!data.districtId) {
+				if (!data.district) {
 					document.getElementById("noDistrict").style.display = "block";
 					isValid = false;
 				}
@@ -379,7 +390,10 @@
 					document.getElementById("noFloorArea").style.display = "block";
 					isValid = false;
 				}
-				if (!data.rentArea || data.rentArea <= 0) {
+				const rentArea = data.rentArea?.trim();
+				const regex = /^\d+(,\d+)*$/;
+
+				if (!rentArea || !regex.test(rentArea)) {
 					document.getElementById("noRentArea").style.display = "block";
 					isValid = false;
 				}
@@ -387,11 +401,13 @@
 					document.getElementById("noRentPrice").style.display = "block";
 					isValid = false;
 				}
-				if (!data.managerPhoneNumber) {
+				if (!data.managerPhone) {
 					document.getElementById("noManagerPhone").style.display = "block";
 					isValid = false;
 				}
-				if (data.managerPhoneNumber && !/^\d{10}$/.test(data.managerPhoneNumber)) {
+				const phone = data.managerPhone?.trim();
+
+				if (!phone || !/^\d{10}$/.test(phone)) {
 					document.getElementById("noManagerPhone").textContent = "Số điện thoại phải có 10 chữ số";
 					document.getElementById("noManagerPhone").style.display = "block";
 					isValid = false;
@@ -425,7 +441,7 @@
 
 				console.log(data);
 				$.ajax({
-					url: "http://localhost:8081/buildings",
+					url: "/api/buildings",
 					type: "POST",
 					contentType: "application/json",
 					data: JSON.stringify(data),
