@@ -19,10 +19,13 @@ import com.daizuongkk.building.service.UserService;
 @RequestMapping("/admin/buildings")
 public class BuildingController {
 
-	@Autowired
-	private BuildingService buildingService;
-	@Autowired
-	private UserService userService;
+	private final BuildingService buildingService;
+	private final UserService userService;
+
+	public BuildingController(BuildingService buildingService, UserService userService) {
+		this.buildingService = buildingService;
+		this.userService = userService;
+	}
 
 	@GetMapping("/list")
 	public String buildingList(@ModelAttribute BuildingSearchRequest buildingSearchRequest, Model model) {

@@ -1,14 +1,13 @@
 package com.daizuongkk.building.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.daizuongkk.building.model.dto.AssignBuildingDTO;
 import com.daizuongkk.building.model.dto.ResponseDTO;
 import com.daizuongkk.building.model.dto.request.BuildingDTO;
 import com.daizuongkk.building.model.dto.request.BuildingSearchRequest;
 import com.daizuongkk.building.model.dto.response.BuildingResponse;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public interface BuildingService {
@@ -23,5 +22,7 @@ public interface BuildingService {
 	public abstract BuildingDTO findById(Long id);
 
 	public abstract void assignBuilding(AssignBuildingDTO assignBuilding);
+
+    public abstract void updateBuilding(Long id, BuildingDTO request);
 
 }

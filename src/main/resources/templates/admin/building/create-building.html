@@ -72,6 +72,9 @@
 								<div class="widget-body">
 									<div class="widget-main no-padding">
 										<form class="form-horizontal" role="form" id="form-edit-building">
+
+                                            <input id="buildingId" th:value="${building.id == null ? '' : building.id}"
+                                                   type="hidden">
 											<div class="form-group">
 												<label class="col-sm-3 control-label no-padding-right " for="name">Tên Tòa
 													Nhà</label>
@@ -419,8 +422,6 @@
 			$('#btn-add-building').click(function (e) {
 				e.preventDefault();
 				var formData = $('#form-edit-building').serializeArray();
-
-
 				var data = {};
 
 				$.each(formData, function (index, field) {
@@ -440,25 +441,49 @@
 				}
 
 				console.log(data);
-				$.ajax({
-					url: "/api/buildings",
-					type: "POST",
-					contentType: "application/json",
-					data: JSON.stringify(data),
 
-					success: function (res) {
-						alert("Thêm building thành công");
-					},
+                if ($("#buildingId").val() != "") {
+                    updateBuilding(data)
+                } else createBuilding(data)
+            });
+        });
 
-					error: function (err) {
-						console.log(err);
-						alert("Có lỗi xảy ra khi thêm building");
-					}
-				});
+        const updateBuilding = (data) => {
+            $.ajax({
+                url: "/api/buildings/" + $("#buildingId").val(),
+                type: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+
+                success: function (res) {
+                    alert("Cập nhật thông tin tòa nhà thành công.");
+                },
+
+                error: function (err) {
+                    console.log(err);
+                    alert("Có lỗi xảy ra khi cập nhật thông tin tòa nhà.");
+                }
+            });
+        }
 
 
-			});
-		});
+        const createBuilding = (data) => {
+            $.ajax({
+                url: "/api/buildings",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+
+                success: function (res) {
+                    alert("Thêm building thành công");
+                },
+
+                error: function (err) {
+                    console.log(err);
+                    alert("Có lỗi xảy ra khi thêm building");
+                }
+            });
+        }
 	</script>
 
 

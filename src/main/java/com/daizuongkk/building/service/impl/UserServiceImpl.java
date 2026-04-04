@@ -33,11 +33,14 @@ public class UserServiceImpl implements UserService {
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	@Autowired
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
+
+	public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+		this.userRepository = userRepository;
+		this.passwordEncoder = passwordEncoder;
+	}
 
 	@Override
 	public PaginationResult<User> listUserInfo(String key, int page, int maxResult, int maxNavigationPage) {

@@ -1,34 +1,28 @@
 package com.daizuongkk.building.api.admin;
 
-import java.util.List;
-
+import com.daizuongkk.building.model.dto.AssignBuildingDTO;
+import com.daizuongkk.building.model.dto.ResponseDTO;
+import com.daizuongkk.building.model.dto.request.BuildingDTO;
+import com.daizuongkk.building.service.BuildingService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.daizuongkk.building.model.dto.AssignBuildingDTO;
-import com.daizuongkk.building.model.dto.ResponseDTO;
-import com.daizuongkk.building.model.dto.request.BuildingDTO;
-import com.daizuongkk.building.service.BuildingService;
-
-import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PutMapping;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/buildings")
 public class BuildingAPI {
 
-	@Autowired
-	private BuildingService buildingService;
+	private final BuildingService buildingService;
+
+	public BuildingAPI(BuildingService buildingService) {
+		this.buildingService = buildingService;
+	}
 
 	@PostMapping()
 	public ResponseEntity<?> addBuilding(@RequestBody @Valid BuildingDTO request, BindingResult bindingResult) {
@@ -74,9 +68,9 @@ public class BuildingAPI {
 		return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 	}
 
-	@PutMapping("path/{id}")
-	public String editBuilding(@PathVariable String id, @RequestBody String entity) {
-
-		return entity;
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateBuilding(@PathVariable Long id, @RequestBody BuildingDTO buildingDTO) {
+        buildingService.updateBuilding(id, buildingDTO);
+        return null;
 	}
 }

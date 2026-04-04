@@ -19,8 +19,11 @@ import java.util.stream.Collectors;
 @RequestMapping("/users")
 public class UserAPI {
 
-	@Autowired
-	private UserService userService;
+	private final UserService userService;
+
+	public UserAPI(UserService userService) {
+		this.userService = userService;
+	}
 
 	@PostMapping
 	public ResponseEntity<?> createUser(@Valid @ModelAttribute UserDTO user, BindingResult bindingResult) {
