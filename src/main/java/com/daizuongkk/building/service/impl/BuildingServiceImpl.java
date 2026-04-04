@@ -19,7 +19,6 @@ import com.daizuongkk.building.repository.UserRepository;
 import com.daizuongkk.building.service.BuildingService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -53,7 +52,7 @@ public class BuildingServiceImpl implements BuildingService {
 		List<Building> listBuilding = buildingRepo.findBuildings(request);
 
 		return listBuilding.stream()
-				.map(building -> entityToResponse(building)).collect(Collectors.toList());
+				.map(this::entityToResponse).collect(Collectors.toList());
 
 	}
 
@@ -164,8 +163,8 @@ public class BuildingServiceImpl implements BuildingService {
 
         return BuildingResponse.builder().id(building.getId()).name(building.getName())
                 .address(building.getStreet() + ", " + building.getWard() + ", "
-                        + (District.fromCode(building.getDistrict()) != null
-                        ? District.fromCode(building.getDistrict()).getName()
+						+ (building.getDistrict() != null
+						? District.valueOf(building.getDistrict()).getName()
                         : ""))
                 .numberOfBasement(building.getNumberOfBasement()).managerName(building.getManagerName())
                 .managerPhone(building.getManagerPhone()).floorArea(building.getFloorArea())

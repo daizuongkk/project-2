@@ -1,30 +1,22 @@
 package com.daizuongkk.building.service.impl;
 
-import java.io.IOException;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.daizuongkk.building.constant.SystemConstant;
 import com.daizuongkk.building.entity.User;
 import com.daizuongkk.building.model.dto.UserDTO;
 import com.daizuongkk.building.pagination.PaginationResult;
 import com.daizuongkk.building.repository.UserRepository;
 import com.daizuongkk.building.service.UserService;
+import jakarta.persistence.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
+import java.io.IOException;
+import java.util.Base64;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -90,7 +82,7 @@ public class UserServiceImpl implements UserService {
 			} catch (IOException e) {
 				throw new RuntimeException("Invalid image data", e);
 			}
-			if (image != null && image.length > 0) {
+			if (image.length > 0) {
 				user.setImage(image);
 			}
 		}

@@ -1,9 +1,8 @@
 package com.daizuongkk.building.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.daizuongkk.building.entity.User;
+import com.daizuongkk.building.repository.AccountRepository;
+import com.daizuongkk.building.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,17 +10,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.daizuongkk.building.entity.User;
-import com.daizuongkk.building.repository.AccountRepository;
-import com.daizuongkk.building.repository.UserRepository;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-	@Autowired
-	private AccountRepository accountRepository;
+	private final AccountRepository accountRepository;
 
-	@Autowired
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
+
+	public UserDetailsServiceImpl(AccountRepository accountRepository, UserRepository userRepository) {
+		this.accountRepository = accountRepository;
+		this.userRepository = userRepository;
+	}
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

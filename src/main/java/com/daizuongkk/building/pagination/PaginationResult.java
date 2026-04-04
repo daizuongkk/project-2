@@ -7,12 +7,12 @@ import java.util.List;
 
 public class PaginationResult<E> {
 
-	private int totalRecords;
-	private int currentPage;
-	private List<E> list;
-	private int maxResult;
-	private int totalPages;
-	private int maxNavigationPage;
+	private final int totalRecords;
+	private final int currentPage;
+	private final List<E> list;
+	private final int maxResult;
+	private final int totalPages;
+	private final int maxNavigationPage;
 	private List<Integer> navigationPages;
 
 	public PaginationResult(TypedQuery<E> query, TypedQuery<Long> countQuery, int page, int maxResult,
