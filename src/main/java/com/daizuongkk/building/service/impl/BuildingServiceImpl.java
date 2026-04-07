@@ -6,6 +6,7 @@ import com.daizuongkk.building.entity.Building;
 import com.daizuongkk.building.entity.RentArea;
 import com.daizuongkk.building.entity.User;
 import com.daizuongkk.building.enums.District;
+import com.daizuongkk.building.exception.ResourceNotFoundException;
 import com.daizuongkk.building.model.dto.AssignBuildingDTO;
 import com.daizuongkk.building.model.dto.ResponseDTO;
 import com.daizuongkk.building.model.dto.request.BuildingDTO;
@@ -39,7 +40,8 @@ public class BuildingServiceImpl implements BuildingService {
 
 	private final AssignmentBuildingRepository assignmentBuildingRepo;
 
-	public BuildingServiceImpl(UserRepository userRepo, BuildingRepository buildingRepo, RentAreaRepository rentAreaRepo, AssignmentBuildingRepository assignmentBuildingRepo) {
+	public BuildingServiceImpl(UserRepository userRepo, BuildingRepository buildingRepo, RentAreaRepository rentAreaRepo,
+			AssignmentBuildingRepository assignmentBuildingRepo) {
 		this.userRepo = userRepo;
 		this.buildingRepo = buildingRepo;
 		this.rentAreaRepo = rentAreaRepo;
@@ -60,8 +62,8 @@ public class BuildingServiceImpl implements BuildingService {
 	@Transactional
 	public void create(BuildingDTO request) {
 
-        Building newBuilding = buildingDTOtoEntity(request);
-        rentAreaRepo.saveAll(newBuilding.getRentArea());
+		Building newBuilding = buildingDTOtoEntity(request);
+		rentAreaRepo.saveAll(newBuilding.getRentArea());
 		buildingRepo.save(newBuilding);
 
 	}
@@ -71,7 +73,7 @@ public class BuildingServiceImpl implements BuildingService {
 	public void deleteBuildings(List<Long> buildingIds) {
 
 		if (buildingIds == null || buildingIds.isEmpty())
-			throw new RuntimeException("list id is empty");
+			throw new IllegalArgumentException("list id is empty");
 
 		rentAreaRepo.deleteByBuildingIdIn(buildingIds);
 		assignmentBuildingRepo.deleteByBuildingIdIn(buildingIds);
@@ -106,18 +108,18 @@ public class BuildingServiceImpl implements BuildingService {
 	public BuildingDTO findById(Long id) {
 
 		if (id == null)
-			throw new RuntimeException("building id is null");
+			throw new IllegalArgumentException("building id is null");
 
 		Optional<Building> optionalBuilding = buildingRepo.findById(id);
 
 		if (optionalBuilding.isEmpty())
-			throw new RuntimeException("Not found building by id: " + id);
+			throw new ResourceNotFoundException("Not found building by id: " + id);
 
 		Building building = optionalBuilding.get();
 		BuildingDTO buildingDTO = mapper.map(building, BuildingDTO.class);
 
 		String rentArea = building.getRentArea().stream().map(ra -> ra.getValue().toString())
-                .collect(Collectors.joining(","));
+				.collect(Collectors.joining(","));
 		buildingDTO.setRentArea(rentArea);
 
 		List<String> typeCodes = List.of(building.getType().split(","));
@@ -132,7 +134,7 @@ public class BuildingServiceImpl implements BuildingService {
 		Long buildingId = assignBuilding.getBuildingId();
 
 		Building building = buildingRepo.findById(buildingId)
-				.orElseThrow(() -> new RuntimeException("Building not found by id: " + buildingId));
+				.orElseThrow(() -> new ResourceNotFoundException("Building not found by id: " + buildingId));
 
 		List<Long> staffIds = assignBuilding.getStaffIds();
 
@@ -141,7 +143,7 @@ public class BuildingServiceImpl implements BuildingService {
 		for (Long staffId : staffIds) {
 			AssignmentBuilding assignmentBuilding = new AssignmentBuilding();
 			User staff = userRepo.findById(staffId)
-					.orElseThrow(() -> new RuntimeException("Staff not found by id: " + staffId));
+					.orElseThrow(() -> new ResourceNotFoundException("Staff not found by id: " + staffId));
 			assignmentBuilding.setBuilding(building);
 			assignmentBuilding.setStaff(staff);
 			assignmentBuildings.add(assignmentBuilding);
@@ -151,46 +153,49 @@ public class BuildingServiceImpl implements BuildingService {
 		assignmentBuildingRepo.saveAll(assignmentBuildings);
 	}
 
-    @Override
-    public void updateBuilding(Long id, BuildingDTO buildingDTO) {
-        Building building = buildingDTOtoEntity(buildingDTO);
-        building.setId(id);
+	@Override
+	public void updateBuilding(Long id, BuildingDTO buildingDTO) {
 
-        buildingRepo.save(building);
-    }
+		if (!buildingRepo.existsById(id))
+			throw new ResourceNotFoundException("Not found building to update with id: " + id);
 
-    private BuildingResponse entityToResponse(Building building) {
+		Building updatedBuilding = buildingDTOtoEntity(buildingDTO);
+		updatedBuilding.setId(id);
+		buildingRepo.save(updatedBuilding);
+	}
 
-        return BuildingResponse.builder().id(building.getId()).name(building.getName())
-                .address(building.getStreet() + ", " + building.getWard() + ", "
+	private BuildingResponse entityToResponse(Building building) {
+
+		return BuildingResponse.builder().id(building.getId()).name(building.getName())
+				.address(building.getStreet() + ", " + building.getWard() + ", "
 						+ (building.getDistrict() != null
-						? District.valueOf(building.getDistrict()).getName()
-                        : ""))
-                .numberOfBasement(building.getNumberOfBasement()).managerName(building.getManagerName())
-                .managerPhone(building.getManagerPhone()).floorArea(building.getFloorArea())
-                .rentArea(
-                        building.getRentArea().stream().map(r -> r.getValue().toString()).collect(Collectors.joining(", ")))
-                .emptyArea(null)
-                .rentPrice(building.getPrice())
-                .serviceFee(building.getServiceFee())
-                .brokerageFee(building.getBrokerageFee()).build();
-    }
+								? District.valueOf(building.getDistrict()).getName()
+								: ""))
+				.numberOfBasement(building.getNumberOfBasement()).managerName(building.getManagerName())
+				.managerPhone(building.getManagerPhone()).floorArea(building.getFloorArea())
+				.rentArea(
+						building.getRentArea().stream().map(r -> r.getValue().toString()).collect(Collectors.joining(", ")))
+				.emptyArea(null)
+				.rentPrice(building.getPrice())
+				.serviceFee(building.getServiceFee())
+				.brokerageFee(building.getBrokerageFee()).build();
+	}
 
-    private Building buildingDTOtoEntity(BuildingDTO buildingDTO) {
-        Building building = mapper.map(buildingDTO, Building.class);
-        String typeCodes = String.join(",", buildingDTO.getTypeCodes());
+	private Building buildingDTOtoEntity(BuildingDTO buildingDTO) {
+		Building building = mapper.map(buildingDTO, Building.class);
+		String typeCodes = String.join(",", buildingDTO.getTypeCodes());
 
-        building.setType(typeCodes);
+		building.setType(typeCodes);
 
-        List<RentArea> rentAreas = Stream.of(buildingDTO.getRentArea().split(","))
-                .map(r -> RentArea.builder().value(Long.parseLong(r)).building(building).build())
-                .collect(Collectors.toList());
+		List<RentArea> rentAreas = Stream.of(buildingDTO.getRentArea().split(","))
+				.map(r -> RentArea.builder().value(Long.parseLong(r)).building(building).build())
+				.collect(Collectors.toList());
 
-        if (rentAreas.isEmpty())
-            throw new RuntimeException("Danh sách diện tích thuê rỗng!");
+		if (rentAreas.isEmpty())
+			throw new ResourceNotFoundException("List of rentarea is empty!");
 
-        building.setRentArea(rentAreas);
+		building.setRentArea(rentAreas);
 
-        return building;
-    }
+		return building;
+	}
 }
