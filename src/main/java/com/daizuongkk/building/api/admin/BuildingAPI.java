@@ -35,23 +35,21 @@ public class BuildingAPI {
 	@PostMapping()
 	public ResponseEntity<ResponseDTO> addBuilding(@RequestBody @Valid BuildingDTO request, BindingResult bindingResult) {
 
-		ResponseDTO responseDTO = new ResponseDTO();
 		if (bindingResult.hasErrors()) {
-			List<String> errorMessages = bindingResult.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
-			responseDTO.setDetail(errorMessages);
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
-
+			handleInvalidRequest(bindingResult);
 		}
+
+		ResponseDTO responseDTO = new ResponseDTO();
 		buildingService.create(request);
 		responseDTO.setMessage("Create building successfully");
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseDTO);
 	}
 
 	@DeleteMapping("/{ids}")
-	public ResponseEntity<ResponseDTO> deleteBuilding(@PathVariable List<Long> ids) {
+	public ResponseEntity<String> deleteBuilding(@PathVariable List<Long> ids) {
 
 		buildingService.deleteBuildings(ids);
-		return null;
+		return ResponseEntity.status(HttpStatus.OK).body("{\"message\":\"Delete building successfully\"}");
 	}
 
 	@GetMapping("/{id}/staffs")
@@ -62,14 +60,11 @@ public class BuildingAPI {
 	@PostMapping("/assign")
 	public ResponseEntity<ResponseDTO> assignBuilding(@Valid @RequestBody AssignBuildingDTO assignBuilding,
 			BindingResult bindingResult) {
-		ResponseDTO responseDTO = new ResponseDTO();
 		if (bindingResult.hasErrors()) {
-			List<String> errorMessages = bindingResult.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
-			responseDTO.setDetail(errorMessages);
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
+			handleInvalidRequest(bindingResult);
 
 		}
-
+		ResponseDTO responseDTO = new ResponseDTO();
 		responseDTO.setMessage("Giao tòa nhà thành công");
 		buildingService.assignBuilding(assignBuilding);
 
@@ -81,13 +76,20 @@ public class BuildingAPI {
 			@Valid @RequestBody BuildingDTO buildingDTO, BindingResult bindingResult) {
 		ResponseDTO responseDTO = new ResponseDTO();
 		if (bindingResult.hasErrors()) {
-			List<String> errorMessages = bindingResult.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
-			responseDTO.setDetail(errorMessages);
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
+			handleInvalidRequest(bindingResult);
 
 		}
 		buildingService.updateBuilding(id, buildingDTO);
 		responseDTO.setMessage("Cập nhật thông tin tòa nhà thành công");
 		return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+	}
+
+	private ResponseEntity<ResponseDTO> handleInvalidRequest(BindingResult bindingResult) {
+
+		ResponseDTO responseDTO = new ResponseDTO();
+		List<String> errorMessages = bindingResult.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
+		responseDTO.setDetail(errorMessages);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
+
 	}
 }

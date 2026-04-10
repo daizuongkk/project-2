@@ -17,6 +17,7 @@ import jakarta.persistence.Query;
 public class CustomBuildingRepositoryImpl implements CustomBuildingRepository {
 	@PersistenceContext
 	private EntityManager entityManager;
+	private StringBuilder append;
 
 	public List<Building> findBuildings(BuildingSearchRequest request) {
 		StringBuilder queryStr = new StringBuilder("SELECT DISTINCT b.* FROM building b ");
@@ -78,15 +79,13 @@ public class CustomBuildingRepositoryImpl implements CustomBuildingRepository {
 			}
 
 			else if (fieldName.equals("typeCodes") && !List.of(value).isEmpty()) {
-
+				query.append(" AND ( ");
 				for (int i = 0; i < request.getTypeCodes().size(); ++i) {
-					if (i == 0)
-						query.append(" AND FIND_IN_SET(:type" + i + ", b.type)");
-					else {
-						query.append(" OR FIND_IN_SET(:type" + i + ", b.type)");
-					}
+					if (i > 0)
+						query.append(" OR ");
+					query.append(" FIND_IN_SET(:type").append(i).append(", b.type)");
 				}
-
+				query.append(")");
 			}
 
 		}

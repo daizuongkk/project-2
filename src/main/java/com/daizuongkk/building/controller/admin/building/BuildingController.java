@@ -28,20 +28,17 @@ public class BuildingController {
 	@GetMapping("/list")
 	public String buildingList(@ModelAttribute BuildingSearchRequest buildingSearchRequest, Model model) {
 
+		loadData(model);
 		model.addAttribute("searchData", buildingSearchRequest);
 		model.addAttribute("listBuildings", buildingService.findBuildings(buildingSearchRequest));
-		model.addAttribute("staffs", userService.loadStaff());
-		model.addAttribute("districts", District.getAlls());
-		model.addAttribute("typeCodes", BuildingType.getAlls());
+
 		return "admin/building/list-buildings";
 	}
 
 	@GetMapping("/create")
 	public String createBuilding(Model model) {
 
-		model.addAttribute("staffs", userService.loadStaff());
-		model.addAttribute("districts", District.getAlls());
-		model.addAttribute("typeCodes", BuildingType.getAlls());
+		loadData(model);
 		model.addAttribute("building", new BuildingDTO());
 		return "admin/building/create-building";
 	}
@@ -49,11 +46,15 @@ public class BuildingController {
 	@GetMapping("/{id}/update")
 	public String updateBuilding(@PathVariable Long id, Model model) {
 
+		loadData(model);
+		model.addAttribute("building", buildingService.findById(id));
+		return "admin/building/create-building";
+	}
+
+	private void loadData(Model model) {
 		model.addAttribute("staffs", userService.loadStaff());
 		model.addAttribute("districts", District.getAlls());
 		model.addAttribute("typeCodes", BuildingType.getAlls());
-		model.addAttribute("building", buildingService.findById(id));
-		return "admin/building/create-building";
 	}
 
 }

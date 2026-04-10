@@ -1,5 +1,15 @@
 package com.daizuongkk.building.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+
 import com.daizuongkk.building.constant.SystemConstant;
 import com.daizuongkk.building.entity.AssignmentBuilding;
 import com.daizuongkk.building.entity.Building;
@@ -18,16 +28,8 @@ import com.daizuongkk.building.repository.BuildingRepository;
 import com.daizuongkk.building.repository.RentAreaRepository;
 import com.daizuongkk.building.repository.UserRepository;
 import com.daizuongkk.building.service.BuildingService;
-import jakarta.transaction.Transactional;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import jakarta.transaction.Transactional;
 
 @Service
 public class BuildingServiceImpl implements BuildingService {
@@ -54,7 +56,7 @@ public class BuildingServiceImpl implements BuildingService {
 		List<Building> listBuilding = buildingRepo.findBuildings(request);
 
 		return listBuilding.stream()
-				.map(this::entityToResponse).collect(Collectors.toList());
+				.map(this::entityToResponse).toList();
 
 	}
 
@@ -138,16 +140,21 @@ public class BuildingServiceImpl implements BuildingService {
 
 		List<Long> staffIds = assignBuilding.getStaffIds();
 
-		List<AssignmentBuilding> assignmentBuildings = new ArrayList<>();
+		// for (Long staffId : staffIds) {
+		// AssignmentBuilding assignmentBuilding = new AssignmentBuilding();
+		// User staff = userRepo.findById(staffId)
+		// .orElseThrow(() -> new ResourceNotFoundException("Staff not found by id: " +
+		// staffId));
+		// assignmentBuilding.setBuilding(building);
+		// assignmentBuilding.setStaff(staff);
+		// assignmentBuildings.add(assignmentBuilding);
+		// }
 
-		for (Long staffId : staffIds) {
-			AssignmentBuilding assignmentBuilding = new AssignmentBuilding();
-			User staff = userRepo.findById(staffId)
-					.orElseThrow(() -> new ResourceNotFoundException("Staff not found by id: " + staffId));
-			assignmentBuilding.setBuilding(building);
-			assignmentBuilding.setStaff(staff);
-			assignmentBuildings.add(assignmentBuilding);
-		}
+		// TODO: Dùng findByIdIn
+		List<User> staffs = userRepo.findByIdIn(staffIds);
+
+		List<AssignmentBuilding> assignmentBuildings = staffs.stream()
+				.map(staff -> AssignmentBuilding.builder().building(building).staff(staff).build()).toList();
 
 		assignmentBuildingRepo.deleteAllByBuilding_id(buildingId);
 		assignmentBuildingRepo.saveAll(assignmentBuildings);
@@ -162,6 +169,10 @@ public class BuildingServiceImpl implements BuildingService {
 		Building updatedBuilding = buildingDTOtoEntity(buildingDTO);
 		updatedBuilding.setId(id);
 		buildingRepo.save(updatedBuilding);
+		rentAreaRepo.saveAll(updatedBuilding.getRentArea());
+
+		// TODO: Sửa logic update rentarea
+
 	}
 
 	private BuildingResponse entityToResponse(Building building) {
@@ -186,10 +197,12 @@ public class BuildingServiceImpl implements BuildingService {
 		String typeCodes = String.join(",", buildingDTO.getTypeCodes());
 
 		building.setType(typeCodes);
-
 		List<RentArea> rentAreas = Stream.of(buildingDTO.getRentArea().split(","))
-				.map(r -> RentArea.builder().value(Long.parseLong(r)).building(building).build())
-				.collect(Collectors.toList());
+				.map(r -> RentArea.builder()
+						.value(Long.parseLong(r))
+						.building(building)
+						.build())
+				.toList();
 
 		if (rentAreas.isEmpty())
 			throw new ResourceNotFoundException("List of rentarea is empty!");

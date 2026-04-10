@@ -1,6 +1,6 @@
 package com.daizuongkk.building.enums;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public enum BuildingType {
@@ -16,7 +16,7 @@ public enum BuildingType {
 	}
 
 	public static Map<String, String> getAlls() {
-		Map<String, String> listTypes = new HashMap<>();
+		Map<String, String> listTypes = new LinkedHashMap<>();
 		for (BuildingType d : BuildingType.values()) {
 			listTypes.put(d.toString(), d.typeName);
 		}

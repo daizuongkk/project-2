@@ -1,6 +1,6 @@
 package com.daizuongkk.building.enums;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import lombok.Getter;
@@ -20,7 +20,7 @@ public enum District {
 	}
 
 	public static Map<String, String> getAlls() {
-		Map<String, String> listDistricts = new HashMap<>();
+		Map<String, String> listDistricts = new LinkedHashMap<>();
 		for (District d : District.values()) {
 			listDistricts.put(d.toString(), d.name);
 		}
