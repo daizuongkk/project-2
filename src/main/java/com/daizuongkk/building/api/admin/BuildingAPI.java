@@ -36,7 +36,7 @@ public class BuildingAPI {
 	public ResponseEntity<ResponseDTO> addBuilding(@RequestBody @Valid BuildingDTO request, BindingResult bindingResult) {
 
 		if (bindingResult.hasErrors()) {
-			handleInvalidRequest(bindingResult);
+			buildErrorResponse(bindingResult);
 		}
 
 		ResponseDTO responseDTO = new ResponseDTO();
@@ -61,7 +61,7 @@ public class BuildingAPI {
 	public ResponseEntity<ResponseDTO> assignBuilding(@Valid @RequestBody AssignBuildingDTO assignBuilding,
 			BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
-			handleInvalidRequest(bindingResult);
+			buildErrorResponse(bindingResult);
 
 		}
 		ResponseDTO responseDTO = new ResponseDTO();
@@ -76,7 +76,7 @@ public class BuildingAPI {
 			@Valid @RequestBody BuildingDTO buildingDTO, BindingResult bindingResult) {
 		ResponseDTO responseDTO = new ResponseDTO();
 		if (bindingResult.hasErrors()) {
-			handleInvalidRequest(bindingResult);
+			buildErrorResponse(bindingResult);
 
 		}
 		buildingService.updateBuilding(id, buildingDTO);
@@ -84,7 +84,7 @@ public class BuildingAPI {
 		return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 	}
 
-	private ResponseEntity<ResponseDTO> handleInvalidRequest(BindingResult bindingResult) {
+	private ResponseEntity<ResponseDTO> buildErrorResponse(BindingResult bindingResult) {
 
 		ResponseDTO responseDTO = new ResponseDTO();
 		List<String> errorMessages = bindingResult.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();

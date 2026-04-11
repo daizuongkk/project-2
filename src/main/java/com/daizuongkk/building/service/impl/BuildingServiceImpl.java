@@ -161,6 +161,7 @@ public class BuildingServiceImpl implements BuildingService {
 	}
 
 	@Override
+	@Transactional
 	public void updateBuilding(Long id, BuildingDTO buildingDTO) {
 
 		if (!buildingRepo.existsById(id))
@@ -168,11 +169,12 @@ public class BuildingServiceImpl implements BuildingService {
 
 		Building updatedBuilding = buildingDTOtoEntity(buildingDTO);
 		updatedBuilding.setId(id);
+
+		rentAreaRepo.deleteAllByBuilding_id(id);
 		buildingRepo.save(updatedBuilding);
 		rentAreaRepo.saveAll(updatedBuilding.getRentArea());
 
 		// TODO: Sửa logic update rentarea
-
 	}
 
 	private BuildingResponse entityToResponse(Building building) {

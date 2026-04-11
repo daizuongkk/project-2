@@ -17,7 +17,6 @@ import jakarta.persistence.Query;
 public class CustomBuildingRepositoryImpl implements CustomBuildingRepository {
 	@PersistenceContext
 	private EntityManager entityManager;
-	private StringBuilder append;
 
 	public List<Building> findBuildings(BuildingSearchRequest request) {
 		StringBuilder queryStr = new StringBuilder("SELECT DISTINCT b.* FROM building b ");
