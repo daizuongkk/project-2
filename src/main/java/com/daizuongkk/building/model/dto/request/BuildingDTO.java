@@ -34,10 +34,10 @@ public class BuildingDTO extends AbstractDTO {
 	String direction;
 
 	@NotBlank(message = "rent area is required")
-	@Pattern(regexp = "^\\d+(,\\d+)*$", message = "rent area is invalid")
+	@Pattern(regexp = "^\\d+(,\\d+)*$", message = "rent area must be in the form \"100,200,300,..\"")
 	String rentArea;
 
-    @NotNull(message = "district is required")
+	@NotNull(message = "district is required")
 	@JsonProperty("rentPrice")
 	Long price;
 	String level;
@@ -52,11 +52,9 @@ public class BuildingDTO extends AbstractDTO {
 	String payment;
 	String rentTime;
 	String decorationTime;
-	@NotBlank(message = "manager name is required")
 	String managerName;
-	@NotBlank(message = "manager phone is required")
+	@Pattern(regexp = "^$|^\\d{10}$", message = "manager phone must have 10 digits")
 	String managerPhone;
-	@NotNull(message = "typecodes is required")
 	@NotEmpty(message = "typecodes is required")
 	List<String> typeCodes;
 	Double brokerageFee;

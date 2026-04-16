@@ -1,16 +1,18 @@
-package com.daizuongkk.building.model.dto.request;
-
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+package com.daizuongkk.building.builder;
 
 import java.util.List;
 
 import com.daizuongkk.building.model.dto.AbstractDTO;
 
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
+
 @Getter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BuildingSearchRequest extends AbstractDTO {
+public class BuildingSearchBuilder extends AbstractDTO {
 	String name;
 	String ward;
 	String street;

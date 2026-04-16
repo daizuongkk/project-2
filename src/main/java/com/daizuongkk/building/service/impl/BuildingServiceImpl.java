@@ -5,17 +5,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.daizuongkk.building.constant.SystemConstant;
+import com.daizuongkk.building.converter.BuildingConverter;
 import com.daizuongkk.building.entity.AssignmentBuilding;
 import com.daizuongkk.building.entity.Building;
-import com.daizuongkk.building.entity.RentArea;
 import com.daizuongkk.building.entity.User;
-import com.daizuongkk.building.enums.District;
+import com.daizuongkk.building.exception.InvalidRequestArgumentException;
 import com.daizuongkk.building.exception.ResourceNotFoundException;
 import com.daizuongkk.building.model.dto.AssignBuildingDTO;
 import com.daizuongkk.building.model.dto.ResponseDTO;
@@ -30,41 +29,35 @@ import com.daizuongkk.building.repository.UserRepository;
 import com.daizuongkk.building.service.BuildingService;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class BuildingServiceImpl implements BuildingService {
 
-	private final ModelMapper mapper = new ModelMapper();
+	private final ModelMapper mapper;
 	private final UserRepository userRepo;
 	private final BuildingRepository buildingRepo;
 
 	private final RentAreaRepository rentAreaRepo;
 
 	private final AssignmentBuildingRepository assignmentBuildingRepo;
-
-	public BuildingServiceImpl(UserRepository userRepo, BuildingRepository buildingRepo, RentAreaRepository rentAreaRepo,
-			AssignmentBuildingRepository assignmentBuildingRepo) {
-		this.userRepo = userRepo;
-		this.buildingRepo = buildingRepo;
-		this.rentAreaRepo = rentAreaRepo;
-		this.assignmentBuildingRepo = assignmentBuildingRepo;
-	}
+	private final BuildingConverter buildingConverter;
 
 	@Override
 	public List<BuildingResponse> findBuildings(BuildingSearchRequest request) {
 
-		List<Building> listBuilding = buildingRepo.findBuildings(request);
+		List<Building> listBuilding = buildingRepo.findBuildings(buildingConverter.toBuildingSearchBuilder(request));
 
 		return listBuilding.stream()
-				.map(this::entityToResponse).toList();
-
+				.map(buildingConverter::entityToResponse).toList();
 	}
 
 	@Override
 	@Transactional
 	public void create(BuildingDTO request) {
 
-		Building newBuilding = buildingDTOtoEntity(request);
+		Building newBuilding = buildingConverter.dtoToEntity(request);
 		rentAreaRepo.saveAll(newBuilding.getRentArea());
 		buildingRepo.save(newBuilding);
 
@@ -75,7 +68,7 @@ public class BuildingServiceImpl implements BuildingService {
 	public void deleteBuildings(List<Long> buildingIds) {
 
 		if (buildingIds == null || buildingIds.isEmpty())
-			throw new IllegalArgumentException("list id is empty");
+			throw new InvalidRequestArgumentException("list id is empty");
 
 		rentAreaRepo.deleteByBuildingIdIn(buildingIds);
 		assignmentBuildingRepo.deleteByBuildingIdIn(buildingIds);
@@ -108,9 +101,8 @@ public class BuildingServiceImpl implements BuildingService {
 
 	@Override
 	public BuildingDTO findById(Long id) {
-
 		if (id == null)
-			throw new IllegalArgumentException("building id is null");
+			throw new InvalidRequestArgumentException("building id is null");
 
 		Optional<Building> optionalBuilding = buildingRepo.findById(id);
 
@@ -132,7 +124,6 @@ public class BuildingServiceImpl implements BuildingService {
 	@Override
 	@Transactional
 	public void assignBuilding(AssignBuildingDTO assignBuilding) {
-
 		Long buildingId = assignBuilding.getBuildingId();
 
 		Building building = buildingRepo.findById(buildingId)
@@ -140,17 +131,6 @@ public class BuildingServiceImpl implements BuildingService {
 
 		List<Long> staffIds = assignBuilding.getStaffIds();
 
-		// for (Long staffId : staffIds) {
-		// AssignmentBuilding assignmentBuilding = new AssignmentBuilding();
-		// User staff = userRepo.findById(staffId)
-		// .orElseThrow(() -> new ResourceNotFoundException("Staff not found by id: " +
-		// staffId));
-		// assignmentBuilding.setBuilding(building);
-		// assignmentBuilding.setStaff(staff);
-		// assignmentBuildings.add(assignmentBuilding);
-		// }
-
-		// TODO: Dùng findByIdIn
 		List<User> staffs = userRepo.findByIdIn(staffIds);
 
 		List<AssignmentBuilding> assignmentBuildings = staffs.stream()
@@ -167,50 +147,11 @@ public class BuildingServiceImpl implements BuildingService {
 		if (!buildingRepo.existsById(id))
 			throw new ResourceNotFoundException("Not found building to update with id: " + id);
 
-		Building updatedBuilding = buildingDTOtoEntity(buildingDTO);
+		Building updatedBuilding = buildingConverter.dtoToEntity(buildingDTO);
 		updatedBuilding.setId(id);
-
 		rentAreaRepo.deleteAllByBuilding_id(id);
 		buildingRepo.save(updatedBuilding);
 		rentAreaRepo.saveAll(updatedBuilding.getRentArea());
-
-		// TODO: Sửa logic update rentarea
 	}
 
-	private BuildingResponse entityToResponse(Building building) {
-
-		return BuildingResponse.builder().id(building.getId()).name(building.getName())
-				.address(building.getStreet() + ", " + building.getWard() + ", "
-						+ (building.getDistrict() != null
-								? District.valueOf(building.getDistrict()).getName()
-								: ""))
-				.numberOfBasement(building.getNumberOfBasement()).managerName(building.getManagerName())
-				.managerPhone(building.getManagerPhone()).floorArea(building.getFloorArea())
-				.rentArea(
-						building.getRentArea().stream().map(r -> r.getValue().toString()).collect(Collectors.joining(", ")))
-				.emptyArea(null)
-				.rentPrice(building.getPrice())
-				.serviceFee(building.getServiceFee())
-				.brokerageFee(building.getBrokerageFee()).build();
-	}
-
-	private Building buildingDTOtoEntity(BuildingDTO buildingDTO) {
-		Building building = mapper.map(buildingDTO, Building.class);
-		String typeCodes = String.join(",", buildingDTO.getTypeCodes());
-
-		building.setType(typeCodes);
-		List<RentArea> rentAreas = Stream.of(buildingDTO.getRentArea().split(","))
-				.map(r -> RentArea.builder()
-						.value(Long.parseLong(r))
-						.building(building)
-						.build())
-				.toList();
-
-		if (rentAreas.isEmpty())
-			throw new ResourceNotFoundException("List of rentarea is empty!");
-
-		building.setRentArea(rentAreas);
-
-		return building;
-	}
 }

@@ -1,5 +1,6 @@
 package com.daizuongkk.building.service;
 
+import com.daizuongkk.building.entity.Building;
 import com.daizuongkk.building.model.dto.AssignBuildingDTO;
 import com.daizuongkk.building.model.dto.ResponseDTO;
 import com.daizuongkk.building.model.dto.request.BuildingDTO;
@@ -23,6 +24,6 @@ public interface BuildingService {
 
 	public abstract void assignBuilding(AssignBuildingDTO assignBuilding);
 
-    public abstract void updateBuilding(Long id, BuildingDTO request);
+	public abstract Building updateBuilding(Long id, BuildingDTO request);
 
 }
