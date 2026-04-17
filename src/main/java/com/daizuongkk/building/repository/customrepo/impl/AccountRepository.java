@@ -1,4 +1,4 @@
-package com.daizuongkk.building.repository;
+package com.daizuongkk.building.repository.customrepo.impl;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

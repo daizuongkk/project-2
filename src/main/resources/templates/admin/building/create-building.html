@@ -73,7 +73,8 @@
 									<div class="widget-main no-padding">
 										<form class="form-horizontal" role="form" id="form-edit-building">
 
-											<input id="buildingId" th:value="${building.id == null ? '' : building.id}" type="hidden">
+											<input id="buildingId" th:value="${building.id == null ? '' : building.id}" type="hidden"
+												name="id">
 											<div class="form-group">
 												<label class="col-sm-3 control-label no-padding-right " for="name">Tên Tòa
 													Nhà</label>
@@ -445,18 +446,19 @@
 
 		const updateBuilding = (data) => {
 			$.ajax({
-				url: "/api/buildings/" + $("#buildingId").val(),
+				url: "/api/buildings",
 				type: "PUT",
 				contentType: "application/json",
 				data: JSON.stringify(data),
 
 				success: function (res) {
-					alert("Cập nhật thông tin tòa nhà thành công.");
+					console.log(res)
+					alert(res.message);
 				},
 
 				error: function (err) {
 					console.log(err);
-					alert(err.responseJSON.detail);
+					alert(err.message);
 				}
 			});
 		}

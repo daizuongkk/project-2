@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import com.daizuongkk.building.builder.BuildingSearchBuilder;
 import com.daizuongkk.building.constant.SystemConstant;
 import com.daizuongkk.building.converter.BuildingConverter;
 import com.daizuongkk.building.entity.AssignmentBuilding;
@@ -35,7 +36,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BuildingServiceImpl implements BuildingService {
 
-	private final ModelMapper mapper;
 	private final UserRepository userRepo;
 	private final BuildingRepository buildingRepo;
 
@@ -47,7 +47,9 @@ public class BuildingServiceImpl implements BuildingService {
 	@Override
 	public List<BuildingResponse> findBuildings(BuildingSearchRequest request) {
 
-		List<Building> listBuilding = buildingRepo.findBuildings(buildingConverter.toBuildingSearchBuilder(request));
+		BuildingSearchBuilder searchBuilder = buildingConverter.toBuildingSearchBuilder(request);
+
+		List<Building> listBuilding = buildingRepo.findBuildings(searchBuilder);
 
 		return listBuilding.stream()
 				.map(buildingConverter::entityToResponse).toList();
@@ -58,8 +60,9 @@ public class BuildingServiceImpl implements BuildingService {
 	public void create(BuildingDTO request) {
 
 		Building newBuilding = buildingConverter.dtoToEntity(request);
-		rentAreaRepo.saveAll(newBuilding.getRentArea());
+
 		buildingRepo.save(newBuilding);
+		rentAreaRepo.saveAll(newBuilding.getRentArea());
 
 	}
 
@@ -78,10 +81,13 @@ public class BuildingServiceImpl implements BuildingService {
 	@Override
 	public ResponseDTO loadStaff(Long buildingId) {
 
+		Building building = buildingRepo.findById(buildingId)
+				.orElseThrow(() -> new ResourceNotFoundException("Not found building with id: " + buildingId));
+
 		ResponseDTO responseDTO = new ResponseDTO();
 		List<User> staffs = userRepo.findByUserRoleAndActiveTrue(SystemConstant.STAFF_ROLE);
 
-		Set<Long> assignedBuilding = userRepo.findByAssignmentBuilding_building_id(buildingId).stream()
+		Set<Long> assignedBuilding = userRepo.findByAssignmentBuilding_Building(building).stream()
 				.map(User::getId).collect(Collectors.toSet());
 
 		List<StaffResponse> staffResponses = new ArrayList<>();
@@ -104,21 +110,10 @@ public class BuildingServiceImpl implements BuildingService {
 		if (id == null)
 			throw new InvalidRequestArgumentException("building id is null");
 
-		Optional<Building> optionalBuilding = buildingRepo.findById(id);
+		Building building = buildingRepo.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Not found building by id: " + id));
 
-		if (optionalBuilding.isEmpty())
-			throw new ResourceNotFoundException("Not found building by id: " + id);
-
-		Building building = optionalBuilding.get();
-		BuildingDTO buildingDTO = mapper.map(building, BuildingDTO.class);
-
-		String rentArea = building.getRentArea().stream().map(ra -> ra.getValue().toString())
-				.collect(Collectors.joining(","));
-		buildingDTO.setRentArea(rentArea);
-
-		List<String> typeCodes = List.of(building.getType().split(","));
-		buildingDTO.setTypeCodes(typeCodes);
-		return buildingDTO;
+		return buildingConverter.entityToDTO(building);
 	}
 
 	@Override
@@ -131,7 +126,16 @@ public class BuildingServiceImpl implements BuildingService {
 
 		List<Long> staffIds = assignBuilding.getStaffIds();
 
+		if (staffIds == null || staffIds.isEmpty()) {
+			assignmentBuildingRepo.deleteAllByBuilding_id(buildingId);
+			return;
+		}
+
 		List<User> staffs = userRepo.findByIdIn(staffIds);
+
+		if (staffs.size() != staffIds.size()) {
+			throw new ResourceNotFoundException("Some staff IDs are invalid");
+		}
 
 		List<AssignmentBuilding> assignmentBuildings = staffs.stream()
 				.map(staff -> AssignmentBuilding.builder().building(building).staff(staff).build()).toList();
@@ -142,16 +146,17 @@ public class BuildingServiceImpl implements BuildingService {
 
 	@Override
 	@Transactional
-	public void updateBuilding(Long id, BuildingDTO buildingDTO) {
+	public BuildingDTO updateBuilding(BuildingDTO buildingDTO) {
 
-		if (!buildingRepo.existsById(id))
-			throw new ResourceNotFoundException("Not found building to update with id: " + id);
+		if (!buildingRepo.existsById(buildingDTO.getId()))
+			throw new ResourceNotFoundException("Not found building to update with id: " + buildingDTO.getId());
 
 		Building updatedBuilding = buildingConverter.dtoToEntity(buildingDTO);
-		updatedBuilding.setId(id);
-		rentAreaRepo.deleteAllByBuilding_id(id);
-		buildingRepo.save(updatedBuilding);
+		buildingRepo.saveAndFlush(updatedBuilding);
+		rentAreaRepo.deleteAllByBuilding_id(buildingDTO.getId());
+
 		rentAreaRepo.saveAll(updatedBuilding.getRentArea());
+		return buildingConverter.entityToDTO(updatedBuilding);
 	}
 
 }

@@ -71,16 +71,17 @@ public class BuildingAPI {
 		return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 	}
 
-	@PutMapping("/{id}")
-	public ResponseEntity<ResponseDTO> updateBuilding(@PathVariable Long id,
+	@PutMapping("")
+	public ResponseEntity<ResponseDTO> updateBuilding(
 			@Valid @RequestBody BuildingDTO buildingDTO, BindingResult bindingResult) {
 		ResponseDTO responseDTO = new ResponseDTO();
 		if (bindingResult.hasErrors()) {
 			buildErrorResponse(bindingResult);
 
 		}
-		buildingService.updateBuilding(id, buildingDTO);
+
 		responseDTO.setMessage("Cập nhật thông tin tòa nhà thành công");
+		responseDTO.setData(buildingService.updateBuilding(buildingDTO));
 		return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 	}
 

@@ -1,14 +1,9 @@
-package com.daizuongkk.building.repository;
+package com.daizuongkk.building.repository.customrepo.impl;
 
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
-import jakarta.persistence.TypedQuery;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,15 +16,22 @@ import com.daizuongkk.building.model.CustomerInfo;
 import com.daizuongkk.building.model.OrderDetailInfo;
 import com.daizuongkk.building.model.OrderInfo;
 import com.daizuongkk.building.pagination.PaginationResult;
+import com.daizuongkk.building.repository.ProductRepository;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import lombok.RequiredArgsConstructor;
 
 @Transactional
 @Repository
+@RequiredArgsConstructor
 public class OrderRepository {
 
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	@Autowired
 	private ProductRepository productRepository;
 
 	private int getMaxOrderNum() {

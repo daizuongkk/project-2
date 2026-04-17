@@ -24,6 +24,6 @@ public interface BuildingService {
 
 	public abstract void assignBuilding(AssignBuildingDTO assignBuilding);
 
-	public abstract Building updateBuilding(Long id, BuildingDTO request);
+	public abstract BuildingDTO updateBuilding(BuildingDTO request);
 
 }

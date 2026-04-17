@@ -16,6 +16,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BuildingDTO extends AbstractDTO {
+
+	Long id;
 	@NotBlank(message = "name is required")
 	String name;
 

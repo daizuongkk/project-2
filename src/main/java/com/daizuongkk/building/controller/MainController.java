@@ -18,8 +18,8 @@ import com.daizuongkk.building.model.CartInfo;
 import com.daizuongkk.building.model.CustomerInfo;
 import com.daizuongkk.building.model.ProductInfo;
 import com.daizuongkk.building.pagination.PaginationResult;
-import com.daizuongkk.building.repository.OrderRepository;
 import com.daizuongkk.building.repository.ProductRepository;
+import com.daizuongkk.building.repository.customrepo.impl.OrderRepository;
 import com.daizuongkk.building.utils.Utils;
 import com.daizuongkk.building.validator.CustomerFormValidator;
 

@@ -3,6 +3,7 @@ package com.daizuongkk.building.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.daizuongkk.building.entity.Building;
 import com.daizuongkk.building.entity.User;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	List<User> findByUserRoleAndActiveTrue(String role);
 
-	List<User> findByAssignmentBuilding_building_id(Long buildingId);
+	List<User> findByAssignmentBuilding_Building(Building building);
 
 	List<User> findByIdIn(List<Long> staffIds);
 }

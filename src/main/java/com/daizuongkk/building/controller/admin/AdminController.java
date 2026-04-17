@@ -18,8 +18,8 @@ import com.daizuongkk.building.form.ProductForm;
 import com.daizuongkk.building.model.OrderDetailInfo;
 import com.daizuongkk.building.model.OrderInfo;
 import com.daizuongkk.building.pagination.PaginationResult;
-import com.daizuongkk.building.repository.OrderRepository;
 import com.daizuongkk.building.repository.ProductRepository;
+import com.daizuongkk.building.repository.customrepo.impl.OrderRepository;
 import com.daizuongkk.building.validator.ProductFormValidator;
 
 import java.util.List;

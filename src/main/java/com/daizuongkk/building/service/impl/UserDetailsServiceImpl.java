@@ -1,8 +1,9 @@
 package com.daizuongkk.building.service.impl;
 
 import com.daizuongkk.building.entity.User;
-import com.daizuongkk.building.repository.AccountRepository;
 import com.daizuongkk.building.repository.UserRepository;
+import com.daizuongkk.building.repository.customrepo.impl.AccountRepository;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -49,8 +50,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		boolean credentialsNonExpired = true;
 		boolean accountNonLocked = true;
 
-        return (UserDetails) new org.springframework.security.core.userdetails.User(user.getUserName(), //
-                user.getEncrytedPassword(), enabled, accountNonExpired, //
-                credentialsNonExpired, accountNonLocked, grantList);
+		return (UserDetails) new org.springframework.security.core.userdetails.User(user.getUserName(), //
+				user.getEncrytedPassword(), enabled, accountNonExpired, //
+				credentialsNonExpired, accountNonLocked, grantList);
 	}
 }

@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
 import com.daizuongkk.building.builder.BuildingSearchBuilder;
 import com.daizuongkk.building.entity.Building;
@@ -17,6 +18,7 @@ import com.daizuongkk.building.model.dto.response.BuildingResponse;
 
 import lombok.RequiredArgsConstructor;
 
+@Component
 @RequiredArgsConstructor
 public class BuildingConverter {
 
@@ -24,19 +26,16 @@ public class BuildingConverter {
 
 	public BuildingResponse entityToResponse(Building building) {
 
-		return BuildingResponse.builder().id(building.getId()).name(building.getName())
-				.address(building.getStreet() + ", " + building.getWard() + ", "
-						+ (building.getDistrict() != null
-								? District.valueOf(building.getDistrict()).getName()
-								: ""))
-				.numberOfBasement(building.getNumberOfBasement()).managerName(building.getManagerName())
-				.managerPhone(building.getManagerPhone()).floorArea(building.getFloorArea())
-				.rentArea(
-						building.getRentArea().stream().map(r -> r.getValue().toString()).collect(Collectors.joining(", ")))
-				.emptyArea(null)
-				.rentPrice(building.getPrice())
-				.serviceFee(building.getServiceFee())
-				.brokerageFee(building.getBrokerageFee()).build();
+		BuildingResponse buildingResponse = mapper.map(building, BuildingResponse.class);
+
+		buildingResponse.setAddress(building.getStreet() + ", " + building.getWard() + ", "
+				+ (building.getDistrict() != null
+						? District.valueOf(building.getDistrict()).getName()
+						: ""));
+
+		buildingResponse.setRentArea(
+				building.getRentArea().stream().map(r -> r.getValue().toString()).collect(Collectors.joining(", ")));
+		return buildingResponse;
 	}
 
 	public Building dtoToEntity(BuildingDTO buildingDTO) {
@@ -59,7 +58,21 @@ public class BuildingConverter {
 		return building;
 	}
 
+	public BuildingDTO entityToDTO(Building building) {
+		BuildingDTO buildingDTO = mapper.map(building, BuildingDTO.class);
+		List<String> typeCodes = List.of(building.getType().split(","));
+		buildingDTO.setTypeCodes(typeCodes);
+
+		String rentAreas = building.getRentArea().stream().map(RentArea::getValue).map(String::valueOf)
+				.collect(Collectors.joining(","));
+
+		buildingDTO.setRentArea(rentAreas);
+		return buildingDTO;
+
+	}
+
 	public BuildingSearchBuilder toBuildingSearchBuilder(BuildingSearchRequest buildingSearchRequest) {
+
 		return mapper.map(buildingSearchRequest, BuildingSearchBuilder.class);
 	}
 }

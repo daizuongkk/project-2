@@ -45,13 +45,13 @@ public class CustomBuildingRepositoryImpl implements CustomBuildingRepository {
 			for (Field field : request.getClass().getDeclaredFields()) {
 				field.setAccessible(true);
 				Object value = field.get(request);
-				if (value == null)
+				if (value == null || value.toString().isBlank())
 					continue;
 
 				String fieldName = field.getName();
 
-				if (fieldName.equals("staffId") || fieldName.equals("typeCodes") || fieldName.endsWith("rentArea")
-						|| fieldName.endsWith("rentPrice"))
+				if (fieldName.equals("staffId") || fieldName.equals("typeCodes") || fieldName.endsWith("RentArea")
+						|| fieldName.endsWith("RentPrice"))
 					continue;
 
 				if (Number.class.isAssignableFrom(field.getClass())) {
@@ -78,11 +78,11 @@ public class CustomBuildingRepositoryImpl implements CustomBuildingRepository {
 		}
 
 		if (request.getMinRentPrice() != null) {
-			query.append(" AND b.price >= :minPrice");
+			query.append(" AND b.rentprice >= :minRentPrice");
 		}
 
-		if (request.getMinRentPrice() != null) {
-			query.append(" AND b.price <= :maxPrice");
+		if (request.getMaxRentPrice() != null) {
+			query.append(" AND b.rentprice <= :maxRentPrice");
 		}
 
 		if (request.getStaffId() != null) {
@@ -125,7 +125,7 @@ public class CustomBuildingRepositoryImpl implements CustomBuildingRepository {
 						query.setParameter("type" + i, typeCodes.get(i));
 					}
 				} else
-					query.setParameter(fieldName, Long.parseLong(String.valueOf(value)));
+					query.setParameter(fieldName, value);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
