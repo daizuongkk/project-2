@@ -2,7 +2,6 @@ package com.daizuongkk.building.converter;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -11,7 +10,6 @@ import com.daizuongkk.building.builder.BuildingSearchBuilder;
 import com.daizuongkk.building.entity.Building;
 import com.daizuongkk.building.entity.RentArea;
 import com.daizuongkk.building.enums.District;
-import com.daizuongkk.building.exception.ResourceNotFoundException;
 import com.daizuongkk.building.model.dto.request.BuildingDTO;
 import com.daizuongkk.building.model.dto.request.BuildingSearchRequest;
 import com.daizuongkk.building.model.dto.response.BuildingResponse;

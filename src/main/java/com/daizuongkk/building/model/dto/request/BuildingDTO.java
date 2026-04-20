@@ -1,14 +1,19 @@
 package com.daizuongkk.building.model.dto.request;
 
+import java.util.List;
+
 import com.daizuongkk.building.model.dto.AbstractDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import lombok.*;
-
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
