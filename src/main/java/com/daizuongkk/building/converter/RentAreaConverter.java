@@ -3,9 +3,12 @@ package com.daizuongkk.building.converter;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.springframework.stereotype.Component;
+
 import com.daizuongkk.building.entity.Building;
 import com.daizuongkk.building.entity.RentArea;
 
+@Component
 public class RentAreaConverter {
 
 	public List<RentArea> toListRentArea(String rentArea, Building building) {
