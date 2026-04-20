@@ -2,18 +2,18 @@ package com.daizuongkk.building.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.daizuongkk.building.builder.BuildingSearchBuilder;
 import com.daizuongkk.building.constant.SystemConstant;
 import com.daizuongkk.building.converter.BuildingConverter;
+import com.daizuongkk.building.converter.RentAreaConverter;
 import com.daizuongkk.building.entity.AssignmentBuilding;
 import com.daizuongkk.building.entity.Building;
+import com.daizuongkk.building.entity.RentArea;
 import com.daizuongkk.building.entity.User;
 import com.daizuongkk.building.exception.InvalidRequestArgumentException;
 import com.daizuongkk.building.exception.ResourceNotFoundException;
@@ -44,6 +44,8 @@ public class BuildingServiceImpl implements BuildingService {
 	private final AssignmentBuildingRepository assignmentBuildingRepo;
 	private final BuildingConverter buildingConverter;
 
+	private final RentAreaConverter rentAreaConverter;
+
 	@Override
 	public List<BuildingResponse> findBuildings(BuildingSearchRequest request) {
 
@@ -61,9 +63,11 @@ public class BuildingServiceImpl implements BuildingService {
 
 		Building newBuilding = buildingConverter.dtoToEntity(request);
 
-		buildingRepo.save(newBuilding);
-		rentAreaRepo.saveAll(newBuilding.getRentArea());
+		List<RentArea> rentAreas = rentAreaConverter.toListRentArea(request, newBuilding);
 
+		newBuilding.setRentArea(rentAreas);
+
+		buildingRepo.save(newBuilding);
 	}
 
 	@Override
@@ -72,8 +76,6 @@ public class BuildingServiceImpl implements BuildingService {
 
 		if (buildingIds == null || buildingIds.isEmpty())
 			throw new InvalidRequestArgumentException("list id is empty");
-
-		rentAreaRepo.deleteByBuildingIdIn(buildingIds);
 		assignmentBuildingRepo.deleteByBuildingIdIn(buildingIds);
 		buildingRepo.deleteByIdIn(buildingIds);
 	}
@@ -155,7 +157,8 @@ public class BuildingServiceImpl implements BuildingService {
 		buildingRepo.saveAndFlush(updatedBuilding);
 		rentAreaRepo.deleteAllByBuilding_id(buildingDTO.getId());
 
-		rentAreaRepo.saveAll(updatedBuilding.getRentArea());
+		List<RentArea> rentAreas = rentAreaConverter.toListRentArea(buildingDTO, updatedBuilding);
+		updatedBuilding.setRentArea(rentAreas);
 		return buildingConverter.entityToDTO(updatedBuilding);
 	}
 

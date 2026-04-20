@@ -7,12 +7,14 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -107,7 +109,7 @@ public class Building {
 	private String managerPhone;
 
 	@Column(name = "rentarea")
-	@OneToMany(mappedBy = "building")
+	@OneToMany(mappedBy = "building", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
 	private List<RentArea> rentArea;
 
 	@Column(name = "type")
@@ -116,8 +118,8 @@ public class Building {
 	@Column(name = "note")
 	private String note;
 
-	@OneToMany(mappedBy = "building")
-	private List<AssignmentBuilding> assignmentBuilding;
+	@ManyToMany(mappedBy = "building")
+	private User staff;
 
 	@Lob
 	@Column(name = "image", length = Integer.MAX_VALUE, nullable = true)
