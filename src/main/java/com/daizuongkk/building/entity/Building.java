@@ -121,7 +121,7 @@ public class Building {
 	@Column(name = "note")
 	private String note;
 
-	@ManyToMany(mappedBy = "building")
+	@ManyToMany
 	@JoinTable(name = "assignmentbuilding", joinColumns = @JoinColumn(name = "buildingid"), inverseJoinColumns = @JoinColumn(name = "staffid"))
 	private List<User> staffs = new ArrayList<>();
 

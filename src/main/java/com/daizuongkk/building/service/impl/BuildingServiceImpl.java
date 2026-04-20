@@ -133,12 +133,13 @@ public class BuildingServiceImpl implements BuildingService {
 	@Transactional
 	public BuildingDTO updateBuilding(BuildingDTO buildingDTO) {
 
-		if (!buildingRepo.existsById(buildingDTO.getId()))
-			throw new ResourceNotFoundException("Not found building to update with id: " + buildingDTO.getId());
+		Building exitsBuilding = buildingRepo.findById(buildingDTO.getId())
+				.orElseThrow(() -> new ResourceNotFoundException("Not found building by id: " + buildingDTO.getId()));
 
 		Building updatedBuilding = buildingConverter.dtoToEntity(buildingDTO);
 		List<RentArea> rentAreas = rentAreaConverter.toListRentArea(buildingDTO, updatedBuilding);
 		updatedBuilding.setRentArea(rentAreas);
+		updatedBuilding.setStaffs(exitsBuilding.getStaffs());
 		buildingRepo.saveAndFlush(updatedBuilding);
 
 		return buildingConverter.entityToDTO(updatedBuilding);
