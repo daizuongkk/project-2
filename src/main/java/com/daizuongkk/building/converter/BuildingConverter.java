@@ -43,17 +43,6 @@ public class BuildingConverter {
 		String typeCodes = String.join(",", buildingDTO.getTypeCodes());
 
 		building.setType(typeCodes);
-		List<RentArea> rentAreas = Stream.of(buildingDTO.getRentArea().split(","))
-				.map(r -> RentArea.builder()
-						.value(Long.parseLong(r))
-						.building(building)
-						.build())
-				.toList();
-
-		if (rentAreas.isEmpty())
-			throw new ResourceNotFoundException("List of rentarea is empty!");
-
-		building.setRentArea(rentAreas);
 
 		return building;
 	}
