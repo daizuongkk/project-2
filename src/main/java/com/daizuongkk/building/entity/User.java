@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -58,8 +59,8 @@ public class User extends BaseEntity {
 	@Column(name = "image", length = Integer.MAX_VALUE, nullable = true)
 	private byte[] image;
 
-	@OneToMany(mappedBy = "staff")
-	private List<AssignmentBuilding> assignmentBuilding;
+	@ManyToMany(mappedBy = "staffs")
+	private List<Building> buildings;
 
 	public User(Long id, String userName, Boolean active, String userRole, String fullName, String phone) {
 		this.id = id;

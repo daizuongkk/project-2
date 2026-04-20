@@ -1,5 +1,6 @@
 package com.daizuongkk.building.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,6 +14,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
@@ -110,7 +113,7 @@ public class Building {
 
 	@Column(name = "rentarea")
 	@OneToMany(mappedBy = "building", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
-	private List<RentArea> rentArea;
+	private List<RentArea> rentArea = new ArrayList<>();
 
 	@Column(name = "type")
 	private String type;
@@ -119,7 +122,8 @@ public class Building {
 	private String note;
 
 	@ManyToMany(mappedBy = "building")
-	private User staff;
+	@JoinTable(name = "assignmentbuilding", joinColumns = @JoinColumn(name = "buildingid"), inverseJoinColumns = @JoinColumn(name = "staffid"))
+	private List<User> staffs = new ArrayList<>();
 
 	@Lob
 	@Column(name = "image", length = Integer.MAX_VALUE, nullable = true)

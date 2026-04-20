@@ -11,7 +11,6 @@ import com.daizuongkk.building.builder.BuildingSearchBuilder;
 import com.daizuongkk.building.constant.SystemConstant;
 import com.daizuongkk.building.converter.BuildingConverter;
 import com.daizuongkk.building.converter.RentAreaConverter;
-import com.daizuongkk.building.entity.AssignmentBuilding;
 import com.daizuongkk.building.entity.Building;
 import com.daizuongkk.building.entity.RentArea;
 import com.daizuongkk.building.entity.User;
@@ -23,9 +22,7 @@ import com.daizuongkk.building.model.dto.request.BuildingDTO;
 import com.daizuongkk.building.model.dto.request.BuildingSearchRequest;
 import com.daizuongkk.building.model.dto.response.BuildingResponse;
 import com.daizuongkk.building.model.dto.response.StaffResponse;
-import com.daizuongkk.building.repository.AssignmentBuildingRepository;
 import com.daizuongkk.building.repository.BuildingRepository;
-import com.daizuongkk.building.repository.RentAreaRepository;
 import com.daizuongkk.building.repository.UserRepository;
 import com.daizuongkk.building.service.BuildingService;
 
@@ -38,12 +35,7 @@ public class BuildingServiceImpl implements BuildingService {
 
 	private final UserRepository userRepo;
 	private final BuildingRepository buildingRepo;
-
-	private final RentAreaRepository rentAreaRepo;
-
-	private final AssignmentBuildingRepository assignmentBuildingRepo;
 	private final BuildingConverter buildingConverter;
-
 	private final RentAreaConverter rentAreaConverter;
 
 	@Override
@@ -76,7 +68,6 @@ public class BuildingServiceImpl implements BuildingService {
 
 		if (buildingIds == null || buildingIds.isEmpty())
 			throw new InvalidRequestArgumentException("list id is empty");
-		assignmentBuildingRepo.deleteByBuildingIdIn(buildingIds);
 		buildingRepo.deleteByIdIn(buildingIds);
 	}
 
@@ -89,7 +80,7 @@ public class BuildingServiceImpl implements BuildingService {
 		ResponseDTO responseDTO = new ResponseDTO();
 		List<User> staffs = userRepo.findByUserRoleAndActiveTrue(SystemConstant.STAFF_ROLE);
 
-		Set<Long> assignedBuilding = userRepo.findByAssignmentBuilding_Building(building).stream()
+		Set<Long> assignedBuilding = building.getStaffs().stream()
 				.map(User::getId).collect(Collectors.toSet());
 
 		List<StaffResponse> staffResponses = new ArrayList<>();
@@ -128,22 +119,14 @@ public class BuildingServiceImpl implements BuildingService {
 
 		List<Long> staffIds = assignBuilding.getStaffIds();
 
-		if (staffIds == null || staffIds.isEmpty()) {
-			assignmentBuildingRepo.deleteAllByBuilding_id(buildingId);
-			return;
-		}
-
 		List<User> staffs = userRepo.findByIdIn(staffIds);
 
 		if (staffs.size() != staffIds.size()) {
 			throw new ResourceNotFoundException("Some staff IDs are invalid");
 		}
 
-		List<AssignmentBuilding> assignmentBuildings = staffs.stream()
-				.map(staff -> AssignmentBuilding.builder().building(building).staff(staff).build()).toList();
-
-		assignmentBuildingRepo.deleteAllByBuilding_id(buildingId);
-		assignmentBuildingRepo.saveAll(assignmentBuildings);
+		building.setStaffs(staffs);
+		buildingRepo.saveAndFlush(building);
 	}
 
 	@Override
@@ -154,11 +137,10 @@ public class BuildingServiceImpl implements BuildingService {
 			throw new ResourceNotFoundException("Not found building to update with id: " + buildingDTO.getId());
 
 		Building updatedBuilding = buildingConverter.dtoToEntity(buildingDTO);
-		buildingRepo.saveAndFlush(updatedBuilding);
-		rentAreaRepo.deleteAllByBuilding_id(buildingDTO.getId());
-
 		List<RentArea> rentAreas = rentAreaConverter.toListRentArea(buildingDTO, updatedBuilding);
 		updatedBuilding.setRentArea(rentAreas);
+		buildingRepo.saveAndFlush(updatedBuilding);
+
 		return buildingConverter.entityToDTO(updatedBuilding);
 	}
 
