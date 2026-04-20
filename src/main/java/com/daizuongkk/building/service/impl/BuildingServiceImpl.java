@@ -93,8 +93,8 @@ public class BuildingServiceImpl implements BuildingService {
 		ResponseDTO responseDTO = new ResponseDTO();
 		List<User> staffs = userRepo.findByUserRoleAndActiveTrue(SystemConstant.STAFF_ROLE);
 
-		Set<Long> assignedBuilding = userRepo.findByAssignmentBuilding_Building(building).stream()
-				.map(User::getId).collect(Collectors.toSet());
+		Set<Long> assignedBuilding = building.getAssignmentBuilding().stream()
+				.map(ab -> ab.getStaff().getId()).collect(Collectors.toSet());
 
 		List<StaffResponse> staffResponses = new ArrayList<>();
 		for (User u : staffs) {
