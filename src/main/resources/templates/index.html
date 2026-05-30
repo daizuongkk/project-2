@@ -6,11 +6,11 @@
 	<title>Shoe Shop Online</title>
 	<link rel="stylesheet" type="text/css" th:href="@{/style.css}" />
 	<link rel="icon" th:href="@{/}" type="image/x-icon" />
-	<th:block th:include="_header"></th:block>
+	<th:block th:insert="~{_header}"></th:block>
 </head>
 
 <body>
-	<th:block th:include="_menu"></th:block>
+	<th:block th:insert="~{_menu}"></th:block>
 	<section id="spring1">
 		<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" data-interval="3000">
 			<ol class="carousel-indicators">

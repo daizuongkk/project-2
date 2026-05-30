@@ -211,15 +211,17 @@
 															<input type="text" id="managerPhone" name="managerPhone" class="form-control"
 																placeholder="SĐT Quản Lí ..." th:value="${searchData.managerPhone}" />
 														</div>
-														<div class="col-sm-4">
-															<label for="staffId">Chọn Nhân Viên</label>
-															<select name="staffId" id="select-staff" class="form-control">
-																<option value="">-Chọn Nhân Viên-</option>
-																<option th:each="staff: ${staffs}" th:value="${staff.key}"
-																	th:selected="${staff.key == searchData.staffId}" th:text="${staff.value}">
-																</option>
-															</select>
-														</div>
+														<th:block sec:authorize="hasRole('ROLE_MANAGER')">
+															<div class="col-sm-4">
+																<label for="staffId">Chọn Nhân Viên</label>
+																<select name="staffId" id="select-staff" class="form-control">
+																	<option value="">-Chọn Nhân Viên-</option>
+																	<option th:each="staff: ${staffs}" th:value="${staff.key}"
+																		th:selected="${staff.key == searchData.staffId}" th:text="${staff.value}">
+																	</option>
+																</select>
+															</div>
+														</th:block>
 													</div>
 												</div>
 											</div>

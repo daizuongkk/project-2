@@ -9,6 +9,13 @@ import com.daizuongkk.building.model.dto.ResponseDTO;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+	@ExceptionHandler(UnauthorizedException.class)
+
+	public ResponseEntity<ResponseDTO> handleUnauthorized(UnauthorizedException ex) {
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseDTO.builder().message(ex.getMessage()).build());
+	}
+
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<ResponseDTO> handleNotFound(ResourceNotFoundException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseDTO.builder().message(ex.getMessage()).build());

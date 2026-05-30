@@ -38,14 +38,18 @@ public class WebSecurityConfig {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		String manager = "MANAGER";
 		http
 				.csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers(HttpMethod.DELETE, "/api/buildings/**").hasRole("MANAGER")
-						.requestMatchers("/admin/users/list/**").hasAnyRole("MANAGER")
-						.requestMatchers(HttpMethod.DELETE, "/admin/user/**").hasRole("MANAGER")
-						.requestMatchers(HttpMethod.POST, "/admin/user/**").hasRole("MANAGER")
-						.requestMatchers("/admin/**").hasAnyRole("STAFF", "MANAGER")
+						.requestMatchers("/api/buildings/assign").hasRole(manager)
+						.requestMatchers(HttpMethod.GET, "/api/buildings/*/staffs").hasRole(manager)
+
+						.requestMatchers(HttpMethod.DELETE, "/api/buildings/**").hasRole(manager)
+						.requestMatchers("/admin/users/list/**").hasAnyRole(manager)
+						.requestMatchers(HttpMethod.DELETE, "/admin/user/**").hasRole(manager)
+						.requestMatchers(HttpMethod.POST, "/admin/user/**").hasRole(manager)
+						.requestMatchers("/admin/**").hasAnyRole("STAFF", manager)
 						.anyRequest().permitAll())
 				.exceptionHandling(ex -> ex.accessDeniedPage("/403"))
 				.formLogin(form -> form

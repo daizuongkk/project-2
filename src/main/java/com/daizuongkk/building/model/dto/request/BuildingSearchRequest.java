@@ -8,6 +8,7 @@ import java.util.List;
 import com.daizuongkk.building.model.dto.AbstractDTO;
 
 @Getter
+@Setter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BuildingSearchRequest extends AbstractDTO {

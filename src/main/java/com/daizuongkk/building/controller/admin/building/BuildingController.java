@@ -9,12 +9,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.daizuongkk.building.constant.SystemConstant;
+import com.daizuongkk.building.entity.User;
 import com.daizuongkk.building.enums.BuildingType;
 import com.daizuongkk.building.enums.District;
+import com.daizuongkk.building.exception.ResourceNotFoundException;
 import com.daizuongkk.building.model.dto.request.BuildingDTO;
 import com.daizuongkk.building.model.dto.request.BuildingSearchRequest;
 import com.daizuongkk.building.service.BuildingService;
 import com.daizuongkk.building.service.UserService;
+import com.daizuongkk.building.utils.AuthUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -51,8 +54,17 @@ public class BuildingController {
 	@GetMapping("/{id}/update")
 	public String updateBuilding(@PathVariable Long id, Model model) {
 
+		if (AuthUtils.getAuthorities().contains(SystemConstant.STAFF_ROLE)) {
+			User staff = userService.getUserByUsername(AuthUtils.getCurrentUser().getUsername());
+			if (staff.getBuildings().stream().noneMatch(b -> b.getId().equals(id))) {
+				return "error/404";
+			}
+
+		}
 		loadData(model);
+
 		model.addAttribute("building", buildingService.findById(id));
+
 		return "admin/building/create-building";
 	}
 

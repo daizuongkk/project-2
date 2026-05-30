@@ -2,6 +2,8 @@ package com.daizuongkk.building.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,16 +29,14 @@ import java.io.IOException;
 
 @Controller
 @Transactional
+@RequiredArgsConstructor
 public class MainController {
 
-	@Autowired
-	private OrderRepository orderRepository;
+	private final OrderRepository orderRepository;
 
-	@Autowired
-	private ProductRepository productRepository;
+	private final ProductRepository productRepository;
 
-	@Autowired
-	private CustomerFormValidator customerFormValidator;
+	private final CustomerFormValidator customerFormValidator;
 
 	@InitBinder
 	public void myInitBinder(WebDataBinder dataBinder) {

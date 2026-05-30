@@ -17,4 +17,6 @@ public interface UserService {
 	void delete(List<Long> ids);
 
 	Map<Long, String> loadStaff();
+
+	User getUserByUsername(String username);
 }

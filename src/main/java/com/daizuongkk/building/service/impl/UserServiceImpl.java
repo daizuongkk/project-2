@@ -2,6 +2,7 @@ package com.daizuongkk.building.service.impl;
 
 import com.daizuongkk.building.constant.SystemConstant;
 import com.daizuongkk.building.entity.User;
+import com.daizuongkk.building.exception.InvalidRequestArgumentException;
 import com.daizuongkk.building.model.dto.UserDTO;
 import com.daizuongkk.building.pagination.PaginationResult;
 import com.daizuongkk.building.repository.UserRepository;
@@ -133,5 +134,13 @@ public class UserServiceImpl implements UserService {
 	public Map<Long, String> loadStaff() {
 		List<User> staffs = userRepository.findByUserRoleAndActiveTrue(SystemConstant.STAFF_ROLE);
 		return staffs.stream().collect(Collectors.toMap(User::getId, User::getUserName));
+	}
+
+	@Override
+	public User getUserByUsername(String username) {
+		if (username.isBlank()) {
+			throw new InvalidRequestArgumentException("invalid username");
+		}
+		return userRepository.findByUserName(username);
 	}
 }

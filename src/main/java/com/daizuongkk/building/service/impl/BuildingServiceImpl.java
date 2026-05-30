@@ -26,6 +26,7 @@ import com.daizuongkk.building.pagination.PaginationResult;
 import com.daizuongkk.building.repository.BuildingRepository;
 import com.daizuongkk.building.repository.UserRepository;
 import com.daizuongkk.building.service.BuildingService;
+import com.daizuongkk.building.utils.AuthUtils;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,11 @@ public class BuildingServiceImpl implements BuildingService {
 	public PaginationResult<BuildingResponse> findBuildings(BuildingSearchRequest request, int page, int size,
 			int maxNavPage) {
 
+		if (AuthUtils.getAuthorities().contains("ROLE_STAFF")) {
+
+			User user = userRepo.findByUserName(AuthUtils.getCurrentUser().getUsername());
+			request.setStaffId(user.getId());
+		}
 		BuildingSearchBuilder searchBuilder = buildingConverter.toBuildingSearchBuilder(request);
 
 		PaginationResult<Building> buildings = buildingRepo.findBuildings(searchBuilder, page, size, maxNavPage);
@@ -114,18 +120,20 @@ public class BuildingServiceImpl implements BuildingService {
 			throw new InvalidRequestArgumentException("building id is null");
 
 		Building building = buildingRepo.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Not found building by id: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Not found building with id: " + id));
 
 		return buildingConverter.entityToDTO(building);
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	@Transactional
 	public void assignBuilding(AssignBuildingDTO assignBuilding) {
-		Long buildingId = assignBuilding.getBuildingId();
 
-		Building building = buildingRepo.findById(buildingId)
-				.orElseThrow(() -> new ResourceNotFoundException("Building not found by id: " + buildingId));
+		Building building = buildingRepo.findById(assignBuilding
+				.getBuildingId())
+				.orElseThrow(() -> new ResourceNotFoundException("Building not found by id: " + assignBuilding
+						.getBuildingId()));
 
 		List<Long> staffIds = assignBuilding.getStaffIds();
 
@@ -139,9 +147,13 @@ public class BuildingServiceImpl implements BuildingService {
 		buildingRepo.saveAndFlush(building);
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	@Transactional
 	public BuildingDTO updateBuilding(BuildingDTO buildingDTO) {
+
+		if (buildingDTO.getId() == null)
+			throw new InvalidRequestArgumentException("Invalid building id");
 
 		Building exitsBuilding = buildingRepo.findById(buildingDTO.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("Not found building by id: " + buildingDTO.getId()));
