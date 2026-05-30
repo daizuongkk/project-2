@@ -1,10 +1,19 @@
 package com.daizuongkk.building.pagination;
 
-import jakarta.persistence.TypedQuery;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
+@Builder
+@AllArgsConstructor
+@Setter
+@Getter
 public class PaginationResult<E> {
 
 	private final int totalRecords;
@@ -23,6 +32,26 @@ public class PaginationResult<E> {
 
 		// 1. Đếm số bản ghi
 		this.totalRecords = countQuery.getSingleResult().intValue();
+
+		// 2. Tính tổng số trang
+		this.totalPages = (int) Math.ceil((double) totalRecords / maxResult);
+
+		// 3. Lấy dữ liệu phân trang
+		this.list = query.setFirstResult((currentPage - 1) * maxResult).setMaxResults(maxResult).getResultList();
+
+		// 4. Tính navigation
+		this.maxNavigationPage = Math.min(maxNavigationPage, totalPages);
+		calcNavigationPages();
+	}
+
+	public PaginationResult(Query query, int countQuery, int page, int maxResult,
+			int maxNavigationPage) {
+
+		this.maxResult = maxResult;
+		this.currentPage = Math.max(page, 1);
+
+		// 1. Đếm số bản ghi
+		this.totalRecords = countQuery;
 
 		// 2. Tính tổng số trang
 		this.totalPages = (int) Math.ceil((double) totalRecords / maxResult);
@@ -61,27 +90,4 @@ public class PaginationResult<E> {
 			navigationPages.add(totalPages);
 	}
 
-	public int getTotalPages() {
-		return totalPages;
-	}
-
-	public int getTotalRecords() {
-		return totalRecords;
-	}
-
-	public int getCurrentPage() {
-		return currentPage;
-	}
-
-	public List<E> getList() {
-		return list;
-	}
-
-	public int getMaxResult() {
-		return maxResult;
-	}
-
-	public List<Integer> getNavigationPages() {
-		return navigationPages;
-	}
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.daizuongkk.building.builder.BuildingSearchBuilder;
 import com.daizuongkk.building.entity.Building;
+import com.daizuongkk.building.pagination.PaginationResult;
 import com.daizuongkk.building.repository.customrepo.CustomBuildingRepository;
 
 import jakarta.persistence.EntityManager;
@@ -18,7 +19,7 @@ public class CustomBuildingRepositoryImpl implements CustomBuildingRepository {
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	public List<Building> findBuildings(BuildingSearchBuilder request) {
+	public PaginationResult<Building> findBuildings(BuildingSearchBuilder request, int page, int size, int maxNavPage) {
 		StringBuilder queryStr = new StringBuilder("SELECT DISTINCT b.* FROM building b ");
 		buildJoinClause(request, queryStr);
 		queryStr.append(" WHERE 1=1 ");
@@ -26,7 +27,7 @@ public class CustomBuildingRepositoryImpl implements CustomBuildingRepository {
 		buildSpecialClause(request, queryStr);
 		Query query = entityManager.createNativeQuery(queryStr.toString(), Building.class);
 		setQueryValue(query, request);
-		return query.getResultList();
+		return new PaginationResult<Building>(query, query.getResultList().size(), page, size, maxNavPage);
 	}
 
 	private String buildJoinClause(BuildingSearchBuilder request, StringBuilder query) {
@@ -54,7 +55,7 @@ public class CustomBuildingRepositoryImpl implements CustomBuildingRepository {
 						|| fieldName.endsWith("RentPrice"))
 					continue;
 
-				if (Number.class.isAssignableFrom(field.getClass())) {
+				if (Number.class.isAssignableFrom(field.getClass()) || fieldName.equals("district")) {
 					query.append(" AND b.").append(fieldName.toLowerCase()).append(" = :").append(fieldName);
 				} else {
 					query.append(" AND b.").append(fieldName.toLowerCase()).append(" LIKE :").append(fieldName);
@@ -115,7 +116,10 @@ public class CustomBuildingRepositoryImpl implements CustomBuildingRepository {
 
 				String fieldName = field.getName();
 
-				if (field.getType().equals(String.class))
+				if (fieldName.equals("district"))
+					query.setParameter(fieldName, value);
+
+				else if (field.getType().equals(String.class))
 					query.setParameter(fieldName, "%" + value + "%");
 
 				else if (fieldName.equals("typeCodes")) {
@@ -134,35 +138,3 @@ public class CustomBuildingRepositoryImpl implements CustomBuildingRepository {
 	}
 
 }
-
-// if (field.getType().equals(String.class) && !String.valueOf(value).isBlank())
-// query.append(String.format(" AND b.%s LIKE :%s ", fieldName, fieldName));
-
-// else if (fieldName.startsWith("min")) {
-// query.append(fieldName.endsWith("Price")
-// ? String.format(" AND b.%s >= :%s", fieldName.substring(3).toLowerCase(),
-// fieldName)
-// : String.format(" AND ra.value >= :%s", fieldName));
-// }
-
-// else if (fieldName.startsWith("max")) {
-// query.append(fieldName.endsWith("Price")
-// ? String.format(" AND b.%s <= :%s", fieldName.substring(3).toLowerCase(),
-// fieldName)
-// : String.format(" AND ra.value <= :%s", fieldName));
-
-// }
-
-// else if (Number.class.isAssignableFrom(field.getType())) {
-// query.append(String.format(" AND %s = :%s", fieldName, fieldName));
-// }
-
-// else if (fieldName.equals("typeCodes") && !List.of(value).isEmpty()) {
-// query.append(" AND ( ");
-// for (int i = 0; i < request.getTypeCodes().size(); ++i) {
-// if (i > 0)
-// query.append(" OR ");
-// query.append(" FIND_IN_SET(:type").append(i).append(", b.type)");
-// }
-// query.append(")");
-// }

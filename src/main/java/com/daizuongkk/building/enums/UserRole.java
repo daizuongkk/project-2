@@ -2,7 +2,7 @@ package com.daizuongkk.building.enums;
 
 public enum UserRole {
 	ROLE_MANAGER("Manager"),
-	ROLE_EMPLOYEE("Staff"),
+	ROLE_STAFF("Staff"),
 	ROLE_USER("User");
 
 	private final String label;

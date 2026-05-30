@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 
 <head>
 	<meta charset="UTF-8" />
@@ -246,6 +247,7 @@
 													</div>
 												</div>
 											</div>
+											<input hidden name="page" th:value="${buildingResult.currentPage}" id="page" />
 										</form>
 									</div>
 								</div>
@@ -260,9 +262,11 @@
 										<i class="ace-icon fi bi-building-fill-add bigger-230"></i>
 									</button>
 								</a>
-								<button class="btn btn-app btn-danger btn-sm" title="Xóa tòa nhà" id="delete-buildings">
-									<i class="ace-icon fi bi-building-dash bigger-230"></i>
-								</button>
+								<th:block sec:authorize="hasRole('ROLE_MANAGER')">
+									<button class="btn btn-app btn-danger btn-sm" title="Xóa tòa nhà" id="delete-buildings">
+										<i class="ace-icon fi bi-building-dash bigger-230"></i>
+									</button>
+								</th:block>
 							</div>
 						</div>
 					</div>
@@ -293,7 +297,7 @@
 									</tr>
 								</thead>
 								<tbody id="building-list-tbody">
-									<tr th:each="building : ${listBuildings}">
+									<tr th:each="building : ${buildingResult.list}">
 										<td class="center">
 											<label class="pos-rel">
 												<input type="checkbox" class="ace" th:value="${building.id}" />
@@ -313,15 +317,20 @@
 										<td th:text="${building.brokerageFee}"></td>
 										<td>
 											<div class="hidden-sm hidden-xs btn-group">
-												<button class="btn btn-xs btn-success" th:onclick="'selectStaff(' + ${building.id} + ')'">
-													<i class="ace-icon fas fa-user bigger-120"></i>
-												</button>
+												<th:block sec:authorize="hasRole('ROLE_MANAGER')">
+													<button class="btn btn-xs btn-success" th:onclick="'selectStaff(' + ${building.id} + ')'">
+														<i class="ace-icon fas fa-user bigger-120"></i>
+													</button>
+												</th:block>
 												<a th:href="@{|/admin/buildings/${building.id}/update|}" class="btn btn-xs btn-info">
 													<i class="ace-icon fas fa-pencil-alt bigger-120"></i>
 												</a>
-												<button class="btn btn-xs btn-danger" th:onclick="'deleteBuilding(' + ${building.id} + ')'">
-													<i class="ace-icon fas fa-trash bigger-120"></i>
-												</button>
+												<th:block sec:authorize="hasRole('ROLE_MANAGER')">
+													<button class="btn btn-xs btn-danger" th:onclick="'deleteBuilding(' + ${building.id} + ')'">
+														<i class="ace-icon fas fa-trash bigger-120"></i>
+													</button>
+												</th:block>
+
 											</div>
 										</td>
 									</tr>
@@ -329,6 +338,16 @@
 
 								</tbody>
 							</table>
+							<div class="page-navigator" th:if="${buildingResult.totalPages > 1}">
+								<th:block th:each="page : ${buildingResult.navigationPages}">
+
+									<button th:if="${page != -1}" class="nav-item" th:data-page="${page}" th:text="${page}">
+									</button>
+
+									<span th:if="${page == -1}" class="nav-item"> ... </span>
+
+								</th:block>
+							</div>
 						</div>
 						<!-- /.span -->
 					</div>
@@ -358,10 +377,14 @@
 			$("#form-search-building")[0].reset();
 		});
 
-		$("#btn-search-building").click(function (e) {
-			searchBuildings();
-		});
+		$(".nav-item").click(function (e) {
+			var pageNumber = $(this).data("page");
 
+			if (pageNumber) {
+				$("#page").val(pageNumber);
+				$("#form-search-building").submit();
+			}
+		});
 
 		$("#delete-buildings").click((e) => {
 

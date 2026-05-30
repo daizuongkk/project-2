@@ -3,6 +3,7 @@ package com.daizuongkk.building.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -40,6 +41,10 @@ public class WebSecurityConfig {
 		http
 				.csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(auth -> auth
+						.requestMatchers(HttpMethod.DELETE, "/api/buildings/**").hasRole("MANAGER")
+						.requestMatchers("/admin/users/list/**").hasAnyRole("MANAGER")
+						.requestMatchers(HttpMethod.DELETE, "/admin/user/**").hasRole("MANAGER")
+						.requestMatchers(HttpMethod.POST, "/admin/user/**").hasRole("MANAGER")
 						.requestMatchers("/admin/**").hasAnyRole("STAFF", "MANAGER")
 						.anyRequest().permitAll())
 				.exceptionHandling(ex -> ex.accessDeniedPage("/403"))

@@ -1,5 +1,6 @@
 package com.daizuongkk.building.converter;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,7 @@ public class BuildingConverter {
 
 		buildingResponse.setRentArea(
 				building.getRentArea().stream().map(r -> r.getValue().toString()).collect(Collectors.joining(", ")));
+
 		return buildingResponse;
 	}
 
@@ -42,6 +44,16 @@ public class BuildingConverter {
 
 		building.setType(typeCodes);
 
+		if (buildingDTO.getImage() != null) {
+
+			String[] imgDecoded = buildingDTO.getImage().split(",");
+			byte[] image = Base64.getDecoder().decode(imgDecoded[1]);
+
+			if (image != null && image.length > 0 && buildingDTO.getImage().contains(","))
+
+				building.setImage(image);
+
+		}
 		return building;
 	}
 
@@ -54,6 +66,23 @@ public class BuildingConverter {
 				.collect(Collectors.joining(","));
 
 		buildingDTO.setRentArea(rentAreas);
+
+		if (building.getImage() != null && building.getImage().length > 0) {
+			String base64 = Base64.getEncoder().encodeToString(building.getImage());
+
+			String prefix;
+			if (base64.startsWith("iVBOR")) {
+				prefix = "data:image/png;base64,";
+			} else if (base64.startsWith("/9j/")) {
+				prefix = "data:image/jpeg;base64,";
+			} else if (base64.startsWith("UklGR")) {
+				prefix = "data:image/webp;base64,";
+			} else {
+				prefix = "data:image/jpeg;base64,";
+			}
+
+			buildingDTO.setImage(prefix + base64);
+		}
 		return buildingDTO;
 
 	}
@@ -62,4 +91,5 @@ public class BuildingConverter {
 
 		return mapper.map(buildingSearchRequest, BuildingSearchBuilder.class);
 	}
+
 }

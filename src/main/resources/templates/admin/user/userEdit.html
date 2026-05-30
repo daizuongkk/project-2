@@ -94,7 +94,7 @@
 								<div class="form-group">
 									<label class="col-sm-3 control-label no-padding-right">Upload Image</label>
 									<div class="col-sm-5 text-center">
-										<input type="file" class="form-control-file" id="exampleFormControlFile1" th:field="*{fileData}">
+										<input type="file" class="form-control-file" id="user-avatar" th:field="*{fileData}">
 									</div>
 								</div>
 								<!-- BUTTONS -->
@@ -170,7 +170,7 @@
 				saveUser(dataObj);
 			} else {
 				$('#avatar').show();
-				const fileInput = $('#exampleFormControlFile1')[0].files[0];
+				const fileInput = $('#user-avatar')[0].files[0];
 				if (fileInput) {
 					try {
 						dataObj.base64Image = await toBase64(fileInput);

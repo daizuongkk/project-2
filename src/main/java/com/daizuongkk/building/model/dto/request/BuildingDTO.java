@@ -69,4 +69,5 @@ public class BuildingDTO extends AbstractDTO {
 	String linkOfBuilding;
 	String map;
 	String image;
+	String imageType;
 }

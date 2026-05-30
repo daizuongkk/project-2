@@ -22,6 +22,7 @@ import com.daizuongkk.building.model.dto.request.BuildingDTO;
 import com.daizuongkk.building.model.dto.request.BuildingSearchRequest;
 import com.daizuongkk.building.model.dto.response.BuildingResponse;
 import com.daizuongkk.building.model.dto.response.StaffResponse;
+import com.daizuongkk.building.pagination.PaginationResult;
 import com.daizuongkk.building.repository.BuildingRepository;
 import com.daizuongkk.building.repository.UserRepository;
 import com.daizuongkk.building.service.BuildingService;
@@ -39,14 +40,23 @@ public class BuildingServiceImpl implements BuildingService {
 	private final RentAreaConverter rentAreaConverter;
 
 	@Override
-	public List<BuildingResponse> findBuildings(BuildingSearchRequest request) {
+	public PaginationResult<BuildingResponse> findBuildings(BuildingSearchRequest request, int page, int size,
+			int maxNavPage) {
 
 		BuildingSearchBuilder searchBuilder = buildingConverter.toBuildingSearchBuilder(request);
 
-		List<Building> listBuilding = buildingRepo.findBuildings(searchBuilder);
+		PaginationResult<Building> buildings = buildingRepo.findBuildings(searchBuilder, page, size, maxNavPage);
+		return PaginationResult.<BuildingResponse>builder()
+				.list(
+						buildings.getList().stream().map(buildingConverter::entityToResponse).toList())
+				.currentPage(buildings.getCurrentPage())
+				.totalPages(buildings.getTotalPages())
+				.maxResult(buildings.getMaxResult())
+				.maxNavigationPage(buildings.getMaxNavigationPage())
+				.totalRecords(buildings.getTotalRecords())
+				.navigationPages(buildings.getNavigationPages())
+				.build();
 
-		return listBuilding.stream()
-				.map(buildingConverter::entityToResponse).toList();
 	}
 
 	@Override

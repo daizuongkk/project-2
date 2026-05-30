@@ -11,4 +11,7 @@ public class SystemConstant {
 	public static final String ALERT = "alert";
 	public static final String MESSAGE_RESPONSE = "messageResponse";
 	public static final String PASSWORD_DEFAULT = "123456";
+	public static final int PAGINATION_SIZE = 5;
+	public static final int MAX_NAV_PAGE = 10;
+
 }
