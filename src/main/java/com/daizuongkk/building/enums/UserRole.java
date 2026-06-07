@@ -1,9 +1,9 @@
 package com.daizuongkk.building.enums;
 
 public enum UserRole {
-	ROLE_MANAGER("Manager"),
-	ROLE_STAFF("Staff"),
-	ROLE_USER("User");
+	ROLE_MANAGER("Quản lý"),
+	ROLE_STAFF("Nhân viên"),
+	ROLE_USER("Người dùng");
 
 	private final String label;
 

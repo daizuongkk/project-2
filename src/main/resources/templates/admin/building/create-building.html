@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>Estate Building Admin - Create Building</title>
+	<title>Estate Building Admin - Tòa nhà</title>
 	<th:block th:replace="~{admin/common/header :: header}"></th:block>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -36,16 +36,16 @@
 					<ul class="breadcrumb">
 						<li>
 							<i class="ace-icon fa fa-home home-icon"></i>
-							<a href="#">Home</a>
+							<a href="#">Trang chủ</a>
 						</li>
-						<li class="active">Dashboard</li>
+						<li class="active">Quản lý tòa nhà</li>
 					</ul>
 					<!-- /.breadcrumb -->
 
 					<div class="nav-search" id="nav-search">
 						<form class="form-search">
 							<span class="input-icon">
-								<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input"
+								<input type="text" placeholder="Tìm kiếm ..." class="nav-search-input" id="nav-search-input"
 									autocomplete="off" />
 								<i class="ace-icon fa fa-search nav-search-icon"></i>
 							</span>
@@ -56,10 +56,10 @@
 				<div class="page-content">
 					<div class="page-header">
 						<h1>
-							Thông Tin Tòa Nhà
+								Thông Tin Tòa Nhà
 							<small>
 								<i class="ace-icon fa fa-angle-double-right"></i>
-								overview &amp; stats
+								tạo và cập nhật
 							</small>
 						</h1>
 					</div>
@@ -387,7 +387,7 @@
 			if (!file) return;
 
 			if (!file.type.startsWith("image/")) {
-				alert("Chỉ chọn file ảnh thôi!");
+				alert("Vui lòng chỉ chọn file ảnh!");
 				return;
 			}
 
@@ -511,7 +511,7 @@
 
 				error: function (err) {
 					console.log(err);
-					alert(err.message);
+					alert(err.responseJSON?.message || err.responseJSON?.detail?.join('\n') || "Cập nhật tòa nhà thất bại");
 				}
 			});
 		}
@@ -525,12 +525,12 @@
 				data: JSON.stringify(data),
 
 				success: function (res) {
-					alert("Thêm building thành công");
+					alert(res.message || "Thêm tòa nhà thành công");
 				},
 
 				error: function (err) {
-					console.error(err.responseJSON?.detail.join('\n'));
-					alert("Lỗi khi thêm tòa nhà")
+					console.error(err.responseJSON?.detail?.join('\n'));
+					alert(err.responseJSON?.message || err.responseJSON?.detail?.join('\n') || "Thêm tòa nhà thất bại")
 				}
 			});
 		}

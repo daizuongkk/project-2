@@ -23,28 +23,28 @@ import lombok.Setter;
 public class BuildingDTO extends AbstractDTO {
 
 	Long id;
-	@NotBlank(message = "name is required")
+	@NotBlank(message = "Tên tòa nhà không được để trống")
 	String name;
 
-	@NotBlank(message = "district is required")
+	@NotBlank(message = "Vui lòng chọn quận")
 	String district;
 	String ward;
 	String street;
 	String structure;
 
-	@NotNull(message = "number of basement is required")
+	@NotNull(message = "Số tầng hầm không được để trống")
 	Long numberOfBasement;
 
-	@NotNull(message = "floor area is required")
+	@NotNull(message = "Diện tích sàn không được để trống")
 	Long floorArea;
 
 	String direction;
 
-	@NotBlank(message = "rent area is required")
-	@Pattern(regexp = "^\\d+(,\\d+)*$", message = "rent area must be in the form \"100,200,300,..\"")
+	@NotBlank(message = "Diện tích thuê không được để trống")
+	@Pattern(regexp = "^\\d+(,\\d+)*$", message = "Diện tích thuê phải có dạng \"100,200,300,...\"")
 	String rentArea;
 
-	@NotNull(message = "district is required")
+	@NotNull(message = "Giá thuê không được để trống")
 	@JsonProperty("rentPrice")
 	Long price;
 	String level;
@@ -60,9 +60,9 @@ public class BuildingDTO extends AbstractDTO {
 	String rentTime;
 	String decorationTime;
 	String managerName;
-	@Pattern(regexp = "^$|^\\d{10}$", message = "manager phone must have 10 digits")
+	@Pattern(regexp = "^$|^\\d{10}$", message = "Số điện thoại quản lý phải có 10 chữ số")
 	String managerPhone;
-	@NotEmpty(message = "typecodes is required")
+	@NotEmpty(message = "Vui lòng chọn ít nhất một loại tòa nhà")
 	List<String> typeCodes;
 	Double brokerageFee;
 	String note;

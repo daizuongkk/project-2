@@ -1,43 +1,35 @@
 package com.daizuongkk.building.entity;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
 @Setter
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "building")
-public class Building {
+public class Building extends BaseEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	// @Id
+	// @GeneratedValue(strategy = GenerationType.IDENTITY)
+	// private Long id;
 
 	@Column(name = "name", length = 255, nullable = false)
 	private String name;
@@ -111,7 +103,6 @@ public class Building {
 	@Column(name = "managerphone")
 	private String managerPhone;
 
-	@Column(name = "rentarea")
 	@OneToMany(mappedBy = "building", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
 	private List<RentArea> rentArea = new ArrayList<>();
 
@@ -129,20 +120,20 @@ public class Building {
 	@Column(name = "image", length = Integer.MAX_VALUE, nullable = true)
 	private byte[] image;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "createddate", nullable = false)
-	private Date createdDate;
+	// @Temporal(TemporalType.TIMESTAMP)
+	// @Column(name = "createddate", nullable = false)
+	// private Date createdDate;
 
-	@Column(name = "createdby")
-	@CreatedBy
-	private String createdBy;
+	// @Column(name = "createdby")
+	// @CreatedBy
+	// private String createdBy;
 
-	@Column(name = "modifieddate")
-	@LastModifiedDate
-	private Date modifiedDate;
+	// @Column(name = "modifieddate")
+	// @LastModifiedDate
+	// private Date modifiedDate;
 
-	@Column(name = "modifiedby")
-	@LastModifiedBy
-	private String modifiedBy;
+	// @Column(name = "modifiedby")
+	// @LastModifiedBy
+	// private String modifiedBy;
 
 }

@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>Shoe Shop Online</title>
+	<title>Thông tin khách hàng</title>
 	<link rel="stylesheet" type="text/css" th:href="@{/style.css}" />
 	<th:block th:insert="~{_header}"></th:block>
 </head>
@@ -17,10 +17,10 @@
 			<div class="col-lg-6 offset-3">
 
 				<div class="bd-example">
-					<h3>Enter Customer Information</h3>
+					<h3>Nhập thông tin khách hàng</h3>
 					<form method="POST" th:object="${customerForm}" th:action="@{/shoppingCartCustomer}">
 						<div class="form-group">
-							<label for="exampleInputEmail1">CustomerName</label>
+							<label for="exampleInputEmail1">Tên khách hàng</label>
 							<input type="text" class="form-control" id="exampleInputEmail1" th:field="*{name}">
 							<span class="error-message" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">..</span>
 						</div>
@@ -32,20 +32,20 @@
 						</div>
 
 						<div class="form-group">
-							<label for="exampleInputEmail1">Phone</label>
+							<label for="exampleInputEmail1">Số điện thoại</label>
 							<input type="text" class="form-control" id="exampleInputEmail1" th:field="*{phone}">
 							<span class="error-message" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">..</span>
 						</div>
 
 						<div class="form-group">
-							<label for="exampleInputPassword1">Address</label>
+							<label for="exampleInputPassword1">Địa chỉ</label>
 							<textarea th:field="*{address}" class="form-control"></textarea>
 							<span class="error-message" th:if="${#fields.hasErrors('address')}" th:errors="*{address}">..</span>
 
 						</div>
 
-						<input type="submit" value="Submit" class="btn btn-primary" />
-						<input type="reset" class="btn btn-outline-primary" value="Reset" />
+						<input type="submit" value="Gửi" class="btn btn-primary" />
+						<input type="reset" class="btn btn-outline-primary" value="Nhập lại" />
 					</form>
 
 

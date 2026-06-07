@@ -26,6 +26,7 @@ public class CustomBuildingRepositoryImpl implements CustomBuildingRepository {
 		buildNormalClause(request, queryStr);
 		buildSpecialClause(request, queryStr);
 		Query query = entityManager.createNativeQuery(queryStr.toString(), Building.class);
+
 		setQueryValue(query, request);
 		return new PaginationResult<Building>(query, query.getResultList().size(), page, size, maxNavPage);
 	}

@@ -1,8 +1,13 @@
 package com.daizuongkk.building.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -16,6 +21,9 @@ import java.util.Date;
 @Getter
 @Setter
 @MappedSuperclass
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity implements Serializable {
 

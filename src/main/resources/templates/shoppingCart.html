@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>Shoe Shop Online</title>
+	<title>Giỏ hàng</title>
 	<link rel="stylesheet" type="text/css" th:href="@{/style.css}" />
 	<th:block th:insert="~{_header}"></th:block>
 </head>
@@ -17,12 +17,12 @@
 
 
 	<th:block th:if="${cartForm == null || cartForm.cartLines == null || cartForm.cartLines.empty}">
-		<h2>There is no items in Cart</h2>
-		<a th:href="@{/productList}">Show Product List</a>
+		<h2>Giỏ hàng chưa có sản phẩm</h2>
+		<a th:href="@{/productList}">Xem danh sách tòa nhà</a>
 	</th:block>
 
 	<div class="container cart_bag">
-		<h2 style="font-weight: bold;">YOUR BAG</h2>
+		<h2 style="font-weight: bold;">GIỎ HÀNG</h2>
 		<div class="row">
 			<div class="col-lg-8 col-sm-8 col-xs-12">
 				<table class="table">
@@ -37,16 +37,16 @@
 										<b style="color: #000;font-size:16px; font-weight: 600"
 											th:utext="${cartLineInfo.productInfo.name}"></b>
 										<p style="font-size: 14px;">CORE BLACK / CORE BLACK / CORE BLACK<br>
-											SIZE: M 7.5 / W 8.5<br>
-											PRICE: <span th:utext="${cartLineInfo.productInfo.price}"></span>
+											DIỆN TÍCH: M 7.5 / W 8.5<br>
+											GIÁ: <span th:utext="${cartLineInfo.productInfo.price}"></span>
 										</p>
 
 
 										<input type="hidden" th:name="|cartLines[${varStatus.index}].productInfo.code|"
 											th:value="${cartLineInfo.productInfo.code}" />
-										<a href="" style="margin-right: 10px;">Move to Favorite</a>
+										<a href="" style="margin-right: 10px;">Thêm vào yêu thích</a>
 										<a th:href="@{|/shoppingCartRemoveProduct?code=${cartLineInfo.productInfo.code}|}"
-											style="margin-right: 10px;"> Remove</a>
+											style="margin-right: 10px;"> Xóa</a>
 									</td>
 									<td> <input type="text" th:name="|cartLines[${varStatus.index}].quantity|"
 											th:value="${cartLineInfo.quantity}" class="form-control" style="width: 50px; height: 35px;">
@@ -58,9 +58,9 @@
 
 							<tr>
 								<td colspan="7" align="right">
-									<input class="btn btn-dark" type="submit" value="Update Quantity" />
-									<a th:href="@{/productList}" style="margin-left: 20px;">Continue Shopping</a>
-									<a th:href="@{/shoppingCartCustomer}">Checkout</a>
+									<input class="btn btn-dark" type="submit" value="Cập nhật số lượng" />
+									<a th:href="@{/productList}" style="margin-left: 20px;">Tiếp tục xem tòa nhà</a>
+									<a th:href="@{/shoppingCartCustomer}">Thanh toán</a>
 
 								</td>
 								<td></td>
@@ -73,27 +73,27 @@
 				</table>
 			</div> <!-- -----col-lg-8 col-sm-8 col-xs-12 end --- -->
 			<div class="col-lg-4 col-sm-4 col-xs-12">
-				<h5 style="font-weight: bold;">SUMMARY</h5>
+				<h5 style="font-weight: bold;">TÓM TẮT</h5>
 				<table class="table cart-subtotal">
 					<tr>
 						<td>
-							Do you have a Promo Code? <i class="fas fa-chevron-down"></i> <i
+							Bạn có mã khuyến mãi? <i class="fas fa-chevron-down"></i> <i
 								class="fas fa-question-circle"></i><br><br>
-							Subtotal <i class="fas fa-question-circle"></i><br><br>
-							Quantity <br><br>
-							Estimated Shipping & Handling<br><br>
-							Estimated TAX
+							Tạm tính <i class="fas fa-question-circle"></i><br><br>
+							Số lượng <br><br>
+							Phí vận chuyển dự kiến<br><br>
+							Thuế dự kiến
 						</td>
 						<td>
 							<br><br>
 							$<span th:utext="${myCart.amountTotal}"></span><br><br>
-							[<span th:utext="${myCart.quantityTotal}"></span> ITEMS]<br><br>
+							[<span th:utext="${myCart.quantityTotal}"></span> mục]<br><br>
 							FREE<br><br>
 							$0.0
 						</td>
 
 					<tr>
-						<td><b>TOTAL</b></td>
+						<td><b>TỔNG CỘNG</b></td>
 						<td><b>$<span th:utext="${myCart.amountTotal}"></span></b></td>
 					</tr>
 
@@ -102,7 +102,7 @@
 
 				</table>
 
-				<a th:href="@{/shoppingCartCustomer}" class="btn btn-dark btn-lg btn-block">CHECKOUT <span
+				<a th:href="@{/shoppingCartCustomer}" class="btn btn-dark btn-lg btn-block">THANH TOÁN <span
 						class="fa fa-arrow-right" style="margin-left: 9px;"></span></a>
 
 				<a href="https://www.paypal.com/webapps/hermes?token=EC-7N9771196T667744L"
@@ -110,7 +110,7 @@
 						src="https://www.nike.com/assets/experience/pet/payment-icons/paypal@2x.png"></a>
 
 				<br><br>
-				<h5 style="font-weight: bold;">ACCEPTED PAYMENT METHODS</h5><br>
+				<h5 style="font-weight: bold;">PHƯƠNG THỨC THANH TOÁN ĐƯỢC HỖ TRỢ</h5><br>
 				<img
 					src="https://brand.assets.adidas.com/image/upload/f_auto,q_auto,fl_lossy/enUS/Images/visa-master-amex-disc-pp-apple-affirm_tcm221-444412.png">
 

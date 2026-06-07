@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>Shoe Shop Online</title>
+	<title>Danh sách tòa nhà</title>
 	<link rel="stylesheet" type="text/css" th:href="@{/style.css}" />
 	<th:block th:insert="~{_header}"></th:block>
 </head>
@@ -21,7 +21,7 @@
 
 
 	<div class="container">
-		<h2 style="font-weight: bold;">Product List</h2>
+		<h2 style="font-weight: bold;">Danh sách tòa nhà</h2>
 
 
 		<div class="row">
@@ -34,18 +34,18 @@
 								<img th:src="@{|/productImage?id=${prodInfo.id}|}" alt="..."
 									style="width:280px; height:320px; margin-bottom:5px; margin-right:2px;">
 								<div class="box">
-									<h6 class="h6_offer">Originals</h6>
+									<h6 class="h6_offer">Tòa nhà nổi bật</h6>
 									<p style="font-size:13px;"><span th:utext="${prodInfo.name}"></span><br>
 										$<span th:utext="${prodInfo.price}"></span>
 									</p>
-									<h6 class="h6_offer">2 colors</h6>
-									<a th:href="@{|/buyProduct?id=${prodInfo.id}|}" class="btn btn-link">Buy Now</a>
+									<h6 class="h6_offer">Nhiều lựa chọn</h6>
+									<a th:href="@{|/buyProduct?id=${prodInfo.id}|}" class="btn btn-link">Chọn ngay</a>
 								</div>
 							</div>
 
 							<!-- For Manager edit Building -->
 							<th:block sec:authorize="hasAuthority('ROLE_MANAGER')">
-								<a style="color:red;" th:href="@{|/admin/building?id=${prodInfo.id}|}">Edit Product</a>
+								<a style="color:red;" th:href="@{|/admin/building?id=${prodInfo.id}|}">Sửa tòa nhà</a>
 							</th:block>
 						</div>
 					</div>

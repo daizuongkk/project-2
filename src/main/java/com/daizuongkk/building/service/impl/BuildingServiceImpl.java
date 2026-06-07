@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.daizuongkk.building.builder.BuildingSearchBuilder;
@@ -26,6 +27,7 @@ import com.daizuongkk.building.pagination.PaginationResult;
 import com.daizuongkk.building.repository.BuildingRepository;
 import com.daizuongkk.building.repository.UserRepository;
 import com.daizuongkk.building.service.BuildingService;
+import com.daizuongkk.building.service.UserService;
 import com.daizuongkk.building.utils.AuthUtils;
 
 import jakarta.transaction.Transactional;
@@ -39,14 +41,15 @@ public class BuildingServiceImpl implements BuildingService {
 	private final BuildingRepository buildingRepo;
 	private final BuildingConverter buildingConverter;
 	private final RentAreaConverter rentAreaConverter;
+	private final UserService userService;
 
 	@Override
 	public PaginationResult<BuildingResponse> findBuildings(BuildingSearchRequest request, int page, int size,
 			int maxNavPage) {
 
-		if (AuthUtils.getAuthorities().contains("ROLE_STAFF")) {
+		if (AuthUtils.getAuthorities().contains(SystemConstant.STAFF_ROLE)) {
 
-			User user = userRepo.findByUserName(AuthUtils.getCurrentUser().getUsername());
+			User user = userRepo.findByUsername(AuthUtils.getCurrentUsername());
 			request.setStaffId(user.getId());
 		}
 		BuildingSearchBuilder searchBuilder = buildingConverter.toBuildingSearchBuilder(request);
@@ -83,7 +86,7 @@ public class BuildingServiceImpl implements BuildingService {
 	public void deleteBuildings(List<Long> buildingIds) {
 
 		if (buildingIds == null || buildingIds.isEmpty())
-			throw new InvalidRequestArgumentException("list id is empty");
+			throw new InvalidRequestArgumentException("Danh sách mã tòa nhà không được để trống");
 		buildingRepo.deleteByIdIn(buildingIds);
 	}
 
@@ -91,7 +94,7 @@ public class BuildingServiceImpl implements BuildingService {
 	public ResponseDTO loadStaff(Long buildingId) {
 
 		Building building = buildingRepo.findById(buildingId)
-				.orElseThrow(() -> new ResourceNotFoundException("Not found building with id: " + buildingId));
+				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tòa nhà có mã: " + buildingId));
 
 		ResponseDTO responseDTO = new ResponseDTO();
 		List<User> staffs = userRepo.findByUserRoleAndActiveTrue(SystemConstant.STAFF_ROLE);
@@ -110,17 +113,17 @@ public class BuildingServiceImpl implements BuildingService {
 			staffResponses.add(staffResponse);
 		}
 		responseDTO.setData(staffResponses);
-		responseDTO.setMessage("Load staff successfully");
+		responseDTO.setMessage("Tải danh sách nhân viên thành công");
 		return responseDTO;
 	}
 
 	@Override
 	public BuildingDTO findById(Long id) {
 		if (id == null)
-			throw new InvalidRequestArgumentException("building id is null");
+			throw new InvalidRequestArgumentException("Mã tòa nhà không được để trống");
 
 		Building building = buildingRepo.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Not found building with id: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tòa nhà có mã: " + id));
 
 		return buildingConverter.entityToDTO(building);
 	}
@@ -132,7 +135,7 @@ public class BuildingServiceImpl implements BuildingService {
 
 		Building building = buildingRepo.findById(assignBuilding
 				.getBuildingId())
-				.orElseThrow(() -> new ResourceNotFoundException("Building not found by id: " + assignBuilding
+				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tòa nhà có mã: " + assignBuilding
 						.getBuildingId()));
 
 		List<Long> staffIds = assignBuilding.getStaffIds();
@@ -140,7 +143,7 @@ public class BuildingServiceImpl implements BuildingService {
 		List<User> staffs = userRepo.findByIdIn(staffIds);
 
 		if (staffs.size() != staffIds.size()) {
-			throw new ResourceNotFoundException("Some staff IDs are invalid");
+			throw new ResourceNotFoundException("Một số mã nhân viên không hợp lệ");
 		}
 
 		building.setStaffs(staffs);
@@ -152,11 +155,20 @@ public class BuildingServiceImpl implements BuildingService {
 	@Transactional
 	public BuildingDTO updateBuilding(BuildingDTO buildingDTO) {
 
+		if (AuthUtils.getAuthorities().contains(SystemConstant.STAFF_ROLE)) {
+			User staff = userService.getUserByUsername(AuthUtils.getCurrentUsername());
+			if (staff.getBuildings() == null
+					|| staff.getBuildings().stream().noneMatch(b -> b.getId().equals(buildingDTO.getId()))) {
+				throw new AccessDeniedException("Không có quyền cập nhật tòa nhà");
+			}
+
+		}
+
 		if (buildingDTO.getId() == null)
-			throw new InvalidRequestArgumentException("Invalid building id");
+			throw new InvalidRequestArgumentException("Mã tòa nhà không hợp lệ");
 
 		Building exitsBuilding = buildingRepo.findById(buildingDTO.getId())
-				.orElseThrow(() -> new ResourceNotFoundException("Not found building by id: " + buildingDTO.getId()));
+				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tòa nhà có mã: " + buildingDTO.getId()));
 
 		Building updatedBuilding = buildingConverter.dtoToEntity(buildingDTO);
 		List<RentArea> rentAreas = rentAreaConverter.toListRentArea(buildingDTO, updatedBuilding);

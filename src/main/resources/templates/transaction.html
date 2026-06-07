@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <meta charset="UTF-8">
+    <title>Estate Building</title>
+    <th:block th:replace="~{admin/common/header :: header}"></th:block>
+</head>
+<body class="no-skin" style="font-family: 'Abel', sans-serif;">
+<th:block th:replace="~{admin/common/menu :: menu}"></th:block>
+<div class="main-container" id="main-container">
+    <script type="text/javascript">
+        try {
+            ace.settings.check('main-container', 'fixed')
+        } catch (e) {
+        }
+    </script>
+    <th:block th:replace="~{admin/common/sidebar :: sidebar}"></th:block>
+
+    <!-- Info Customer -->
+
+
+    <div th:if="${customerEdit.id != null}">
+        <div th:each="item : ${transactionType}">
+            <div class="col-xs-12">
+                <h2 class="smaller lighter blue">
+                    <span th:text="${item.value}"></span>
+                    <button class="btn btn-md btn-success pull-right"
+                            title="Thêm giao dịch"
+                            th:onclick="'addTransaction(' + ${item.key} + ', ' + ${customerEdit.id} + ')'">
+                        <i class="ace-icon glyphicon glyphicon-plus smaller-80">
+                            Thêm giao dịch
+                        </i>
+                    </button>
+                </h2>
+                <div class="hr hr-16 dotted hr-dotted"></div>
+            </div>
+
+            <!-- CSKH -->
+            <div th:if="${item.key == 'CSKH'}">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <table id="CSKH-list"
+                               class="table table-striped table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>Ngày tạo</th>
+                                <th>Người tạo</th>
+                                <th>Ngày sửa</th>
+                                <th>Người sửa</th>
+                                <th>Chi tiết giao dịch</th>
+                                <th>Thao tác</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr th:each="transaction : ${CSKH}">
+                                    <td th:text="${transaction.createdDate}"></td>
+                                    <td th:text="${transaction.createdBy}"></td>
+                                    <td th:text="${transaction.modifiedDate}"></td>
+                                    <td th:text="${transaction.modifiedBy}"></td>
+                                    <td th:text="${transaction.note}"></td>
+
+                                    <td>
+                                        <a class="btn btn-xs btn-info"
+                                           title="Sửa giao dịch"
+                                           th:onclick="'editTransaction(\''
+                                            + ${transaction.id} + '\',\''
+                                            + ${transaction.code} + '\',\''
+                                            + ${customerEdit.id} + '\',\''
+                                            + ${transaction.note} + '\')'">
+                                            <i class="ace-icon fa fa-pencil bigger-120"></i>
+                                        </a>
+
+                                        <button sec:authorize="hasRole('MANAGER')"
+                                                class="btn btn-xs btn-danger"
+                                                title="Xóa giao dịch"
+                                                th:data-id="${transaction.id}"
+                                                onclick="deleteTransaction(this.dataset.id)">
+                                            <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- DDX -->
+            <div th:if="${item.key == 'DDX'}">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <table id="DDX-list"
+                               class="table table-striped table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>Ngày tạo</th>
+                                <th>Người tạo</th>
+                                <th>Ngày sửa</th>
+                                <th>Người sửa</th>
+                                <th>Chi tiết giao dịch</th>
+                                <th>Thao tác</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr th:each="transaction : ${DDX}">
+                                    <td th:text="${transaction.createdDate}"></td>
+                                    <td th:text="${transaction.createdBy}"></td>
+                                    <td th:text="${transaction.modifiedDate}"></td>
+                                    <td th:text="${transaction.modifiedBy}"></td>
+                                    <td th:text="${transaction.note}"></td>
+
+                                    <td>
+                                        <a class="btn btn-xs btn-info"
+                                           title="Sửa giao dịch"
+                                           th:onclick="'editTransaction(\''
+                                            + ${transaction.id} + '\',\''
+                                            + ${transaction.code} + '\',\''
+                                            + ${customerEdit.id} + '\',\''
+                                            + ${transaction.note} + '\')'">
+                                            <i class="ace-icon fa fa-pencil bigger-120"></i>
+                                        </a>
+
+                                        <button sec:authorize="hasRole('MANAGER')"
+                                                class="btn btn-xs btn-danger"
+                                                title="Xóa giao dịch"
+                                                th:data-id="${transaction.id}"
+                                                onclick="deleteTransaction(this.dataset.id)">
+                                            <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:replace="~{admin/common/footer :: footer}"></th:block>
+<th:block th:replace="~{admin/common/common-scripts :: jquery}"></th:block>
+<script>
+    function validateCustomer(json) {
+        let ok = 1;
+        $('.error-message').remove();
+        if (json['name'] === '') {
+            ok = 0;
+            $('#name').after('<span class="error-message" style="color: red"> Tên khách hàng không được trống </span> ');
+        }
+        if (json['customerPhone'] === '') {
+            ok = 0;
+            $('#customerPhone').after('<span class="error-message" style="color: red"> Số điện thoại không được trống </span> ');
+        }
+        if (json['demand'] === '') {
+            ok = 0;
+            $('#demand').after('<span class="error-message" style="color: red"> Nhu cầu không được trống </span> ');
+        }
+        return ok;
+    }
+
+    $('#btnAddCustomer').click(function (e) {
+        e.preventDefault();
+        const formData = $('#form-edit').serializeArray();
+        const json = {};
+        $.each(formData, function (i, it) {
+            json["" + it.name + ""] = it.value;
+        })
+        const ok = validateCustomer(json);
+        if (ok === 0) {
+            alert('Lỗi khi thêm khách hàng');
+        } else {
+            if (json['id'] === '') {
+                addCustomer(json);
+            } else {
+                updateCustomer(json);
+            }
+        }
+    })
+
+    function addCustomer(json) {
+        $.ajax({
+            type: "POST",
+            url: "/api/customers",
+            data: JSON.stringify(json),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (response) {
+                alert(response.message);
+                window.location.href = "/admin/customer-list";
+            },
+            error: function (response) {
+                let json;
+                try {
+                    json = JSON.parse(response.responseText);
+                    alert(json.detail);
+                } catch (e) {
+                    alert(response.responseText);
+                }
+            }
+        });
+    }
+
+    function updateCustomer(json) {
+        $.ajax({
+            type: "PUT",
+            url: "/api/customers",
+            data: JSON.stringify(json),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (response) {
+                alert(response.message);
+                window.location.href = "/admin/customer-list";
+            },
+            error: function (response) {
+                alert(response.responseJSON.data.join('\n'));
+            }
+        });
+    }
+
+    function addTransaction(type, customerId) {
+        $('#transactionType').val(type);
+        $('#customerId').val(customerId);
+        $('#transactionNote').val('');
+        $('#transactionModal').modal('show');
+    }
+
+    function editTransaction(id, code, customerId, note) {
+        $('#transactionId').val(id);
+        $('#transactionType').val(code);
+        $('#customerId').val(customerId);
+        $('#transactionNote').val(note);
+        $('#transactionModal').modal('show');
+    }
+
+    function submitTransaction() {
+        const id = $('#transactionId').val();
+        const type = $('#transactionType').val();
+        const customerId = $('#customerId').val();
+        const note = $('#transactionNote').val();
+        if (note === '') {
+            alert('Vui lòng nhập chi tiết giao dịch!');
+            return;
+        }
+
+        const data = {
+            customerId: customerId, //add, update
+            code: type, //add, update
+            note: note, //add, update
+            id: id // update
+        };
+
+        if (id) {
+            $.ajax({
+                type: "PUT",
+                url: "/api/transactions/",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (response) {
+                    $('#transactionModal').modal('hide');
+                    alert("Cập nhật giao dịch thành công!");
+                    location.reload();
+                },
+                error: function (xhr) {
+                    alert("Lỗi khi cập nhật giao dịch!");
+                }
+            });
+        } else {
+            $.ajax({
+                type: "POST",
+                url: "/api/transactions",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (response) {
+                    $('#transactionModal').modal('hide');
+                    alert("Thêm giao dịch thành công!");
+                    location.reload();
+                },
+                error: function (xhr) {
+                    alert("Lỗi khi thêm giao dịch!");
+                }
+            });
+        }
+    }
+
+
+    function deleteTransaction(id) {
+        if (!confirm('Bạn có chắc chắn muốn xóa giao dịch này?')) return;
+        $.ajax({
+            type: "DELETE",
+            url: "/api/transactions/" + id,
+            success: function (response) {
+                alert("Xóa giao dịch thành công!");
+                location.reload();
+            },
+            error: function (xhr) {
+                alert("Lỗi khi xóa giao dịch!");
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

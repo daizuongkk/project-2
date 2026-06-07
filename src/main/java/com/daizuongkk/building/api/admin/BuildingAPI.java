@@ -40,12 +40,12 @@ public class BuildingAPI {
 	public ResponseEntity<ResponseDTO> addBuilding(@RequestBody @Valid BuildingDTO request, BindingResult bindingResult) {
 
 		if (bindingResult.hasErrors()) {
-			buildErrorResponse(bindingResult, "Failed to create building");
+			return buildErrorResponse(bindingResult, "Tạo tòa nhà thất bại");
 		}
 
 		ResponseDTO responseDTO = new ResponseDTO();
 		buildingService.create(request);
-		responseDTO.setMessage("Create successful buildings");
+		responseDTO.setMessage("Tạo tòa nhà thành công");
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseDTO);
 	}
 
@@ -53,7 +53,7 @@ public class BuildingAPI {
 	public ResponseEntity<String> deleteBuilding(@PathVariable List<Long> ids) {
 
 		buildingService.deleteBuildings(ids);
-		return ResponseEntity.status(HttpStatus.OK).body("{\"message\":\"Successfully deleted building\"}");
+		return ResponseEntity.status(HttpStatus.OK).body("{\"message\":\"Xóa tòa nhà thành công\"}");
 	}
 
 	@GetMapping("/{id}/staffs")
@@ -66,34 +66,35 @@ public class BuildingAPI {
 			BindingResult bindingResult) {
 
 		if (bindingResult.hasErrors()) {
-			buildErrorResponse(bindingResult, "");
+			return buildErrorResponse(bindingResult, "Giao tòa nhà cho nhân viên thất bại");
 
 		}
 		ResponseDTO responseDTO = new ResponseDTO();
-		responseDTO.setMessage("Successful assign building");
+		responseDTO.setMessage("Giao tòa nhà cho nhân viên thành công");
 		buildingService.assignBuilding(assignBuilding);
 
 		return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 	}
 
-	@PutMapping("")
+	@PutMapping
 	public ResponseEntity<ResponseDTO> updateBuilding(
 			@Valid @RequestBody BuildingDTO buildingDTO, BindingResult bindingResult) {
 		ResponseDTO responseDTO = new ResponseDTO();
 
 		if (AuthUtils.getAuthorities().contains(SystemConstant.STAFF_ROLE)) {
-			User staff = userService.getUserByUsername(AuthUtils.getCurrentUser().getUsername());
+			User staff = userService.getUserByUsername(AuthUtils.getCurrentUsername());
 
-			if (staff.getBuildings().stream().noneMatch(b -> b.getId().equals(buildingDTO.getId()))) {
-				List<String> errorMessages = Arrays.asList("Not found");
-				responseDTO.setMessage("Failed to update building");
+			if (staff.getBuildings() == null
+					|| staff.getBuildings().stream().noneMatch(b -> b.getId().equals(buildingDTO.getId()))) {
+				List<String> errorMessages = Arrays.asList("Không tìm thấy tòa nhà được giao cho nhân viên này");
+				responseDTO.setMessage("Cập nhật tòa nhà thất bại");
 				responseDTO.setDetail(errorMessages);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
 			}
 		}
 
 		if (bindingResult.hasErrors()) {
-			buildErrorResponse(bindingResult, "Failed to update building");
+			return buildErrorResponse(bindingResult, "Cập nhật tòa nhà thất bại");
 		}
 
 		responseDTO.setMessage("Cập nhật thông tin tòa nhà thành công");

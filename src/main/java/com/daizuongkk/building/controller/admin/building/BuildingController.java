@@ -12,7 +12,6 @@ import com.daizuongkk.building.constant.SystemConstant;
 import com.daizuongkk.building.entity.User;
 import com.daizuongkk.building.enums.BuildingType;
 import com.daizuongkk.building.enums.District;
-import com.daizuongkk.building.exception.ResourceNotFoundException;
 import com.daizuongkk.building.model.dto.request.BuildingDTO;
 import com.daizuongkk.building.model.dto.request.BuildingSearchRequest;
 import com.daizuongkk.building.service.BuildingService;
@@ -55,8 +54,8 @@ public class BuildingController {
 	public String updateBuilding(@PathVariable Long id, Model model) {
 
 		if (AuthUtils.getAuthorities().contains(SystemConstant.STAFF_ROLE)) {
-			User staff = userService.getUserByUsername(AuthUtils.getCurrentUser().getUsername());
-			if (staff.getBuildings().stream().noneMatch(b -> b.getId().equals(id))) {
+			User staff = userService.getUserByUsername(AuthUtils.getCurrentUsername());
+			if (staff.getBuildings() == null || staff.getBuildings().stream().noneMatch(b -> b.getId().equals(id))) {
 				return "error/404";
 			}
 

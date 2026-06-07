@@ -18,6 +18,7 @@ import com.daizuongkk.building.model.dto.UserDTO;
 import com.daizuongkk.building.pagination.PaginationResult;
 import com.daizuongkk.building.repository.UserRepository;
 import com.daizuongkk.building.service.UserService;
+import com.daizuongkk.building.utils.AuthUtils;
 import com.daizuongkk.building.utils.MessageUtils;
 
 import java.io.IOException;
@@ -63,14 +64,18 @@ public class UserController {
 
 	@GetMapping("/{userName}")
 	public ModelAndView getUser(@PathVariable String userName, HttpServletRequest request) {
+		if (!AuthUtils.getAuthorities().contains("ROLE_MANAGER")
+				&& !userName.equals(AuthUtils.getCurrentUsername())) {
+			return new ModelAndView("403");
+		}
 		ModelAndView model = new ModelAndView("admin/user/userEdit");
 		UserDTO userDTO = null;
 		if (!userName.trim().isEmpty()) {
-			User user = userRepository.findByUserName(userName);
+			User user = userRepository.findByUsername(userName);
 			if (user != null) {
 				userDTO = new UserDTO();
 				userDTO.setId(user.getId());
-				userDTO.setUserName(user.getUserName());
+				userDTO.setUserName(user.getUsername());
 				userDTO.setFullName(user.getFullName());
 				userDTO.setRoleCode(user.getUserRole());
 				userDTO.initRoles();
@@ -96,7 +101,7 @@ public class UserController {
 			@RequestParam(value = "userName", defaultValue = "") String userName) throws IOException {
 		User user = null;
 		if (userName != null && !userName.isBlank()) {
-			user = userRepository.findByUserName(userName);
+			user = userRepository.findByUsername(userName);
 		}
 		if (user != null && user.getImage() != null) {
 			response.setContentType("image/jpeg");
@@ -114,7 +119,7 @@ public class UserController {
 			User userEntity = userRepository.findById(id).orElseThrow();
 			user = new UserDTO();
 			user.setId(userEntity.getId());
-			user.setUserName(userEntity.getUserName());
+			user.setUserName(userEntity.getUsername());
 			user.setFullName(userEntity.getFullName());
 			user.setRoleCode(userEntity.getUserRole());
 			user.initRoles();

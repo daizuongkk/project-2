@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class AssignBuildingDTO {
 
-	@NotNull(message = "building id is required")
+	@NotNull(message = "Mã tòa nhà không được để trống")
 	private Long buildingId;
 
 	private List<Long> staffIds;

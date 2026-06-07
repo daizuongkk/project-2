@@ -1,17 +1,19 @@
 package com.daizuongkk.building.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.daizuongkk.building.entity.Building;
@@ -25,7 +27,9 @@ import com.daizuongkk.building.repository.customrepo.impl.OrderRepository;
 import com.daizuongkk.building.utils.Utils;
 import com.daizuongkk.building.validator.CustomerFormValidator;
 
-import java.io.IOException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
 @Controller
 @Transactional
@@ -74,6 +78,11 @@ public class MainController {
 	public String register(Model model) {
 		model.addAttribute("customer", new CustomerForm());
 		return "register";
+	}
+
+	@GetMapping("/contact")
+	public String contact(Model model) {
+		return "contact";
 	}
 
 	// Building List

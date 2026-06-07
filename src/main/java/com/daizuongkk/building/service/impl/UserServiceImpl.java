@@ -2,12 +2,20 @@ package com.daizuongkk.building.service.impl;
 
 import com.daizuongkk.building.constant.SystemConstant;
 import com.daizuongkk.building.entity.User;
+import com.daizuongkk.building.enums.UserRole;
 import com.daizuongkk.building.exception.InvalidRequestArgumentException;
 import com.daizuongkk.building.model.dto.UserDTO;
+import com.daizuongkk.building.model.dto.request.RegisterRequest;
+import com.daizuongkk.building.model.dto.response.UserResponse;
 import com.daizuongkk.building.pagination.PaginationResult;
 import com.daizuongkk.building.repository.UserRepository;
 import com.daizuongkk.building.service.UserService;
+import com.daizuongkk.building.utils.AuthUtils;
+
 import jakarta.persistence.*;
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +29,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
 	@PersistenceContext
@@ -30,24 +39,46 @@ public class UserServiceImpl implements UserService {
 
 	private final PasswordEncoder passwordEncoder;
 
-	public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-		this.userRepository = userRepository;
-		this.passwordEncoder = passwordEncoder;
+	@Override
+	public UserResponse register(RegisterRequest request) {
+
+		if (userRepository.existsByUsername(request.getUsername())) {
+			throw new EntityExistsException("Tên đăng nhập " + request.getUsername() + " đã tồn tại");
+		}
+
+		User user = User.builder()
+				.username(request.getUsername())
+				.password(passwordEncoder.encode(request.getPassword()))
+				.fullName(request.getFullName())
+				.phone("")
+				.userRole(UserRole.ROLE_USER.toString())
+				.active(true)
+				.build();
+
+		userRepository.save(user);
+
+		return UserResponse.builder()
+				.username(user.getUsername())
+				.fullName(user.getFullName())
+				.email(user.getEmail())
+				.role(user.getUserRole())
+				.build();
+
 	}
 
 	@Override
 	public PaginationResult<User> listUserInfo(String key, int page, int maxResult, int maxNavigationPage) {
 		StringBuilder sql = new StringBuilder("SELECT NEW " + User.class.getName()
-				+ "(u.id, u.userName, u.active, u.userRole, u.fullName, u.phone) " + "FROM " + User.class.getName() + " u ");
+				+ "(u.id, u.username, u.active, u.userRole, u.fullName, u.phone) " + "FROM " + User.class.getName() + " u ");
 		StringBuilder countSql = new StringBuilder("SELECT COUNT(u.id) FROM " + User.class.getName() + " u ");
 
 		if (key != null && !key.trim().isEmpty()) {
-			sql.append("WHERE (LOWER(u.userName) LIKE :key OR LOWER(u.fullName) LIKE :key OR LOWER(u.phone) LIKE :key) ");
+			sql.append("WHERE (LOWER(u.username) LIKE :key OR LOWER(u.fullName) LIKE :key OR LOWER(u.phone) LIKE :key) ");
 			countSql
-					.append("WHERE (LOWER(u.userName) LIKE :key OR LOWER(u.fullName) LIKE :key OR LOWER(u.phone) LIKE :key) ");
+					.append("WHERE (LOWER(u.username) LIKE :key OR LOWER(u.fullName) LIKE :key OR LOWER(u.phone) LIKE :key) ");
 		}
 
-		sql.append("ORDER BY u.userName DESC");
+		sql.append("ORDER BY u.username DESC");
 
 		TypedQuery<User> query = entityManager.createQuery(sql.toString(), User.class);
 		TypedQuery<Long> countQuery = entityManager.createQuery(countSql.toString(), Long.class);
@@ -65,23 +96,27 @@ public class UserServiceImpl implements UserService {
 		String userName = userDTO.getUserName();
 		User user = null;
 		if (userName != null && !userName.isEmpty()) {
-			user = userRepository.findByUserName(userName);
+			user = userRepository.findByUsername(userName);
 		}
 		if (user != null) {
-			throw new EntityExistsException("User with name " + userName + " already exists");
+			throw new EntityExistsException("Tên đăng nhập " + userName + " đã tồn tại");
+		}
+		if (userDTO.getRoleCode() == null || userDTO.getRoleCode().isBlank()) {
+			throw new InvalidRequestArgumentException("Vui lòng chọn vai trò");
 		}
 		user = new User();
-		user.setUserName(userName);
+		user.setUsername(userName);
 		user.setActive(true);
 		user.setFullName(userDTO.getFullName());
-		user.setEncrytedPassword(passwordEncoder.encode(SystemConstant.PASSWORD_DEFAULT));
-		user.setUserRole(User.ROLE_MANAGER);
+		user.setPhone(userDTO.getPhone() == null ? "" : userDTO.getPhone());
+		user.setPassword(passwordEncoder.encode(SystemConstant.PASSWORD_DEFAULT));
+		user.setUserRole(userDTO.getRoleCode());
 		if (userDTO.getFileData() != null) {
 			byte[] image = null;
 			try {
 				image = userDTO.getFileData().getBytes();
 			} catch (IOException e) {
-				throw new RuntimeException("Invalid image data", e);
+				throw new RuntimeException("Dữ liệu ảnh không hợp lệ", e);
 			}
 			if (image.length > 0) {
 				user.setImage(image);
@@ -94,19 +129,35 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void update(UserDTO userDTO) {
 		String userName = userDTO.getUserName();
-		User user = null;
-		if (userName != null && !userName.isEmpty()) {
-			user = userRepository.findByUserName(userName);
-		}
+		User user = userRepository.findByUsername(userName);
+
 		if (user == null) {
-			throw new EntityNotFoundException("Entity with name " + userName + " not found");
+			throw new EntityNotFoundException("Không tìm thấy người dùng: " + userName);
 		}
-		user.setUserName(userName);
+
+		boolean isManager = AuthUtils.getAuthorities().contains("ROLE_MANAGER");
+		boolean isOwner = userDTO.getUserName().equals(AuthUtils.getCurrentUsername());
+
+		if (!isManager && !isOwner) {
+			throw new AccessDeniedException("Không có quyền thực hiện yêu cầu");
+		}
+
+		user.setUsername(userName);
 		user.setActive(true);
-		user.setUserRole(userDTO.getRoleCode());
+		user.setFullName(userDTO.getFullName());
+		user.setPhone(userDTO.getPhone() == null ? user.getPhone() : userDTO.getPhone());
+
+		if (isManager) {
+			if (userDTO.getRoleCode() == null || userDTO.getRoleCode().isBlank()) {
+				throw new InvalidRequestArgumentException("Vui lòng chọn vai trò");
+			}
+			user.setUserRole(userDTO.getRoleCode());
+		}
+
 		try {
 			if (userDTO.getBase64Image() != null && !userDTO.getBase64Image().isEmpty()) {
 				String base64String = userDTO.getBase64Image();
+
 				if (base64String.contains(",")) {
 					base64String = base64String.split(",")[1];
 				}
@@ -115,8 +166,9 @@ public class UserServiceImpl implements UserService {
 				user.setImage(imageBytes);
 			}
 		} catch (Exception e) {
-			throw new RuntimeException("Invalid image data", e);
+			throw new RuntimeException("Dữ liệu ảnh không hợp lệ", e);
 		}
+
 		userRepository.save(user);
 	}
 
@@ -133,14 +185,14 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Map<Long, String> loadStaff() {
 		List<User> staffs = userRepository.findByUserRoleAndActiveTrue(SystemConstant.STAFF_ROLE);
-		return staffs.stream().collect(Collectors.toMap(User::getId, User::getUserName));
+		return staffs.stream().collect(Collectors.toMap(User::getId, User::getUsername));
 	}
 
 	@Override
 	public User getUserByUsername(String username) {
-		if (username.isBlank()) {
-			throw new InvalidRequestArgumentException("invalid username");
+		if (username == null || username.isBlank()) {
+			throw new InvalidRequestArgumentException("Tên đăng nhập không hợp lệ");
 		}
-		return userRepository.findByUserName(username);
+		return userRepository.findByUsername(username);
 	}
 }

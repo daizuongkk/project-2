@@ -17,7 +17,7 @@ public class RentAreaConverter {
 
 	public List<RentArea> toListRentArea(BuildingDTO buildingDTO, Building building) {
 
-		return Stream.of(buildingDTO.getRentArea().split(","))
+		return (List<RentArea>) Stream.of(buildingDTO.getRentArea().split(","))
 				.map(r -> RentArea.builder()
 						.value(Long.parseLong(r))
 						.building(building)

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import com.daizuongkk.building.entity.Building;
 import com.daizuongkk.building.repository.customrepo.CustomBuildingRepository;
 
-@Repository
 public interface BuildingRepository extends JpaRepository<Building, Long>, CustomBuildingRepository {
 	void deleteByIdIn(List<Long> buildingIds);
 

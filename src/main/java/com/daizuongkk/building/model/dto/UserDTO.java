@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDTO extends AbstractDTO {
-	@NotBlank(message = "UserName is required")
+	@NotBlank(message = "Tên đăng nhập không được để trống")
 	private String userName;
-	@NotBlank(message = "FullName is required")
+	@NotBlank(message = "Họ và tên không được để trống")
 	private String fullName;
-	@Size(min = 3)
+	@Size(min = 3, message = "Mật khẩu phải có ít nhất 3 ký tự")
 	private String password;
 	private Integer status;
 	private MultipartFile fileData;
@@ -33,6 +33,8 @@ public class UserDTO extends AbstractDTO {
 
 	private String base64Image;
 	private String imageName;
+	private String googleAccountId;
+	private String facebookAccountId;
 
 	public void initRoles() {
 		this.roleDTO = Arrays.stream(UserRole.values()).collect(Collectors.toMap(UserRole::getCode, UserRole::getLabel));

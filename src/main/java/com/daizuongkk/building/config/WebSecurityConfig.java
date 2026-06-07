@@ -1,5 +1,8 @@
 package com.daizuongkk.building.config;
 
+import com.daizuongkk.building.security.CustomSuccessHandler;
+import com.daizuongkk.building.service.impl.CustomOidcUserService;
+import com.daizuongkk.building.service.impl.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,14 +15,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
-import com.daizuongkk.building.security.CustomSuccessHandler;
-import com.daizuongkk.building.service.impl.UserDetailsServiceImpl;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
+
+	private static final String MANAGER = "MANAGER";
+	private static final String STAFF = "STAFF";
 
 	private final UserDetailsServiceImpl userDetailsService;
 
@@ -37,30 +40,69 @@ public class WebSecurityConfig {
 	}
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		String manager = "MANAGER";
+	public SecurityFilterChain securityFilterChain(
+			HttpSecurity http,
+			CustomOidcUserService oidcUserService) throws Exception {
+
 		http
 				.csrf(csrf -> csrf.disable())
-				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/api/buildings/assign").hasRole(manager)
-						.requestMatchers(HttpMethod.GET, "/api/buildings/*/staffs").hasRole(manager)
 
-						.requestMatchers(HttpMethod.DELETE, "/api/buildings/**").hasRole(manager)
-						.requestMatchers("/admin/users/list/**").hasAnyRole(manager)
-						.requestMatchers(HttpMethod.DELETE, "/admin/user/**").hasRole(manager)
-						.requestMatchers(HttpMethod.POST, "/admin/user/**").hasRole(manager)
-						.requestMatchers("/admin/**").hasAnyRole("STAFF", manager)
+				.authorizeHttpRequests(auth -> auth
+
+						.requestMatchers(HttpMethod.POST, "/api/buildings").hasRole(MANAGER)
+						.requestMatchers(HttpMethod.PUT, "/api/buildings").hasAnyRole(MANAGER, STAFF)
+						.requestMatchers("/api/buildings/assign").hasRole(MANAGER)
+						.requestMatchers(HttpMethod.GET, "/api/buildings/*/staffs").hasRole(MANAGER)
+						.requestMatchers(HttpMethod.DELETE, "/api/buildings/**").hasRole(MANAGER)
+						.requestMatchers("/api/buildings/**").hasAnyRole(MANAGER, STAFF)
+
+						.requestMatchers(HttpMethod.GET, "/admin/users/userImage").hasAnyRole(MANAGER, STAFF)
+						.requestMatchers("/admin/users/list").hasRole(MANAGER)
+						// .requestMatchers("/admin/users/**").hasRole(MANAGER)
+						.requestMatchers("/api/users/register").permitAll()
+						// .requestMatchers("/api/users").hasRole(MANAGER)
+						.requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole(MANAGER)
+						.requestMatchers(HttpMethod.POST, "/api/users/**").hasRole(MANAGER)
+
+						.requestMatchers(HttpMethod.POST, "/api/customers").permitAll()
+						.requestMatchers(HttpMethod.PUT, "/api/customers").hasAnyRole(MANAGER, STAFF)
+						.requestMatchers("/api/customers/assign").hasRole(MANAGER)
+						.requestMatchers(HttpMethod.GET, "/api/customers/*/staffs").hasRole(MANAGER)
+						.requestMatchers(HttpMethod.DELETE, "/api/customers/**").hasRole(MANAGER)
+						.requestMatchers("/api/customers/**").hasAnyRole(MANAGER, STAFF)
+
+						.requestMatchers("/admin/customers/list/**").hasAnyRole(MANAGER, STAFF)
+						.requestMatchers(HttpMethod.DELETE, "/admin/customers/**").hasRole(MANAGER)
+
+						.requestMatchers("/admin/buildings/create").hasRole(MANAGER)
+						.requestMatchers("/admin/building").hasRole(MANAGER)
+
+						.requestMatchers(HttpMethod.DELETE, "/api/transactions/**").hasRole(MANAGER)
+						.requestMatchers("/api/transactions").hasAnyRole(MANAGER, STAFF)
+						.requestMatchers("/api/transactions/**").hasAnyRole(MANAGER, STAFF)
+
+						.requestMatchers("/admin/**").hasAnyRole(MANAGER, STAFF)
+
 						.anyRequest().permitAll())
+
 				.exceptionHandling(ex -> ex.accessDeniedPage("/403"))
+
 				.formLogin(form -> form
 						.loginPage("/admin/login")
 						.loginProcessingUrl("/j_spring_security_check")
 						.successHandler(myAuthenticationSuccessHandler())
-						// .defaultSuccessUrl("/admin/accountInfo", true)
 						.failureUrl("/admin/login?incorrectAccount")
 						.usernameParameter("userName")
 						.passwordParameter("password")
 						.permitAll())
+
+				.oauth2Login(oauth2 -> oauth2
+						.loginPage("/admin/login")
+						.userInfoEndpoint(info -> info.oidcUserService(oidcUserService))
+						.successHandler(myAuthenticationSuccessHandler())
+						.failureUrl("/admin/login?incorrectAccount")
+						.permitAll())
+
 				.logout(logout -> logout
 						.logoutUrl("/admin/logout")
 						.logoutSuccessUrl("/")

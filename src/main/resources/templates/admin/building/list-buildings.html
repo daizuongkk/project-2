@@ -73,19 +73,19 @@
 					<ul class="breadcrumb">
 						<li>
 							<i class="ace-icon fas fa-home home-icon"></i>
-							<a href="#">Home</a>
+							<a href="#">Trang chủ</a>
 						</li>
-						<li class="active">Dashboard</li>
+						<li class="active">Quản lý tòa nhà</li>
 					</ul>
 					<!-- /.breadcrumb -->
 				</div>
 				<div class="page-content container-fluid">
 					<div class="page-header">
 						<h1>
-							Tìm Kiếm Tòa Nhà
+							Quản Lý Tòa Nhà
 							<small>
 								<i class="ace-icon fas fa-angle-double-right"></i>
-								overview &amp; stats
+								tổng quan
 							</small>
 						</h1>
 					</div>
@@ -211,7 +211,7 @@
 															<input type="text" id="managerPhone" name="managerPhone" class="form-control"
 																placeholder="SĐT Quản Lí ..." th:value="${searchData.managerPhone}" />
 														</div>
-														<th:block sec:authorize="hasRole('ROLE_MANAGER')">
+														<th:block sec:authorize="hasRole('MANAGER')">
 															<div class="col-sm-4">
 																<label for="staffId">Chọn Nhân Viên</label>
 																<select name="staffId" id="select-staff" class="form-control">
@@ -259,12 +259,12 @@
 					<div class="row">
 						<div class="col-xs-12">
 							<div class="pull-right">
-								<a th:href="@{/admin/buildings/create}">
-									<button class="btn btn-app btn-success btn-sm" title="Thêm tòa nhà">
-										<i class="ace-icon fi bi-building-fill-add bigger-230"></i>
-									</button>
-								</a>
-								<th:block sec:authorize="hasRole('ROLE_MANAGER')">
+								<th:block sec:authorize="hasRole('MANAGER')">
+									<a th:href="@{/admin/buildings/create}">
+										<button class="btn btn-app btn-success btn-sm" title="Thêm tòa nhà">
+											<i class="ace-icon fi bi-building-fill-add bigger-230"></i>
+										</button>
+									</a>
 									<button class="btn btn-app btn-danger btn-sm" title="Xóa tòa nhà" id="delete-buildings">
 										<i class="ace-icon fi bi-building-dash bigger-230"></i>
 									</button>
@@ -319,7 +319,7 @@
 										<td th:text="${building.brokerageFee}"></td>
 										<td>
 											<div class="hidden-sm hidden-xs btn-group">
-												<th:block sec:authorize="hasRole('ROLE_MANAGER')">
+												<th:block sec:authorize="hasRole('MANAGER')">
 													<button class="btn btn-xs btn-success" th:onclick="'selectStaff(' + ${building.id} + ')'">
 														<i class="ace-icon fas fa-user bigger-120"></i>
 													</button>
@@ -327,7 +327,7 @@
 												<a th:href="@{|/admin/buildings/${building.id}/update|}" class="btn btn-xs btn-info">
 													<i class="ace-icon fas fa-pencil-alt bigger-120"></i>
 												</a>
-												<th:block sec:authorize="hasRole('ROLE_MANAGER')">
+												<th:block sec:authorize="hasRole('MANAGER')">
 													<button class="btn btn-xs btn-danger" th:onclick="'deleteBuilding(' + ${building.id} + ')'">
 														<i class="ace-icon fas fa-trash bigger-120"></i>
 													</button>
@@ -408,12 +408,13 @@
 		}
 
 		function deleteBuildings(buildingIds) {
-			if (confirm("Chắc chắn xoá?")) {
+			if (confirm("Bạn có chắc chắn muốn xóa tòa nhà đã chọn?")) {
 				$.ajax({
 					url: "/api/buildings/" + buildingIds.join(","),
 					method: "DELETE",
-					success: function () {
-						alert("Tòa nhà đã được xóa thành công.");
+					success: function (response) {
+						const message = typeof response === "string" ? "Tòa nhà đã được xóa thành công." : response.message;
+						alert(message || "Tòa nhà đã được xóa thành công.");
 						location.reload();
 					},
 					error: function (error) {
@@ -447,7 +448,10 @@
 					$("#selectStaff tbody").html(row)
 				},
 				error: function (response) {
-					alert(response.responseJSON.message.join('\n'));
+					const message = response.responseJSON?.detail?.join('\n')
+						|| response.responseJSON?.message
+						|| "Không thể tải danh sách nhân viên.";
+					alert(message);
 				},
 			});
 		}
@@ -475,11 +479,11 @@
 					alert(response.message);
 					$("#modal-select-staff").modal("hide");
 				},
-				error: function (error, response) {
+				error: function (error) {
 					console.error("Lỗi khi giao tòa nhà:", error);
 					$("#modal-select-staff").modal("hide");
 
-					alert(response.message);
+					alert(error.responseJSON?.message || "Đã xảy ra lỗi khi giao tòa nhà.");
 				},
 			});
 		})

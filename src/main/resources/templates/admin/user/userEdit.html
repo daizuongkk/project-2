@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
 	<meta charset="UTF-8">
-	<title>Title</title>
+	<title>Quản lý tài khoản</title>
 	<th:block th:replace="~{admin/common/header :: header}"></th:block>
 </head>
 
@@ -51,13 +51,16 @@
 								<div class="form-group">
 									<label class="col-sm-3 control-label no-padding-right">Vai trò</label>
 									<div class="col-sm-5">
-										<select class="form-control" name="roleCode">
+										<select class="form-control" name="roleCode"
+											th:disabled="${!#authorization.expression('hasRole(''MANAGER'')')}">
 											<option value="">--- Chọn vai trò ---</option>
+
 											<option th:each="r : ${user.roleDTO}" th:value="${r.key}" th:text="${r.value}"
-												th:selected="${r.key == user.roleCode}">
+												th:selected="${r.key == user.roleCode}"
+												th:if="${#authorization.expression('hasRole(''MANAGER'')') or r.key == user.roleCode}">
 											</option>
 										</select>
-										<span class="error-message" id="noRole" style="display: none;color: red;">Vui lòng chon Role</span>
+										<span class="error-message" id="noRole" style="display: none;color: red;">Vui lòng chọn vai trò</span>
 									</div>
 								</div>
 
@@ -67,8 +70,7 @@
 									<div class="col-sm-5">
 										<input type="text" class="form-control" name="userName" th:value="${user.userName}"
 											th:disabled="${user.id != null}" />
-										<span class="error-message" id="noUserName" style="display: none;color: red;">Vui lòng nhập
-											UserName</span>
+										<span class="error-message" id="noUserName" style="display: none;color: red;">Vui lòng nhập tên đăng nhập</span>
 									</div>
 								</div>
 
@@ -77,13 +79,12 @@
 									<label class="col-sm-3 control-label no-padding-right">Tên đầy đủ</label>
 									<div class="col-sm-5">
 										<input type="text" class="form-control" name="fullName" th:value="${user.fullName}" />
-										<span class="error-message" id="noFullName" style="display: none;color: red;">Vui lòng nhập
-											FillName</span>
+										<span class="error-message" id="noFullName" style="display: none;color: red;">Vui lòng nhập họ và tên</span>
 									</div>
 								</div>
 
 								<div class="form-group">
-									<label class="col-sm-3 control-label no-padding-right">Image</label>
+									<label class="col-sm-3 control-label no-padding-right">Ảnh đại diện</label>
 
 									<div class="col-sm-5 text-center">
 										<img id="avatar" alt="avatar" th:src="@{|/admin/users/userImage?userName=${user.userName}|}"
@@ -92,7 +93,7 @@
 								</div>
 
 								<div class="form-group">
-									<label class="col-sm-3 control-label no-padding-right">Upload Image</label>
+									<label class="col-sm-3 control-label no-padding-right">Tải ảnh lên</label>
 									<div class="col-sm-5 text-center">
 										<input type="file" class="form-control-file" id="user-avatar" th:field="*{fileData}">
 									</div>
@@ -106,7 +107,7 @@
 
 										<a class="btn btn-white btn-danger btn-bold" id="btnResetPassword"
 											th:href="@{|/admin/users/change-password/${user.id}|}" th:if="${user.id != null}">
-											Reset mật khẩu
+											Đặt lại mật khẩu
 										</a>
 									</div>
 								</div>
@@ -157,15 +158,18 @@
 		$("#btnAddOrUpdateUsers").click(async function (event) {
 			event.preventDefault();
 
+			const userId = $('#userId').val();
 			const dataObj = {
-				id: $('#userId').val(),
 				userName: $('input[name="userName"]').val(),
 				fullName: $('input[name="fullName"]').val(),
 				roleCode: $('select[name="roleCode"]').val()
 			};
+			if (userId) {
+				dataObj.id = userId;
+			}
 
 			if (!validateData(dataObj)) return;
-			if (dataObj.id === "" || dataObj.id === null) {
+			if (!dataObj.id) {
 				$('#avatar').show();
 				saveUser(dataObj);
 			} else {
@@ -187,7 +191,7 @@
 
 		function updateUser(data) {
 			$.ajax({
-				url: '/users',
+				url: '/api/users',
 				type: 'PUT',
 				contentType: 'application/json',
 				data: JSON.stringify(data),
@@ -198,24 +202,25 @@
 					window.location.reload();
 				},
 				error: function (res) {
-					alert("Lỗi update");
+					alert(res.responseJSON?.message || "Cập nhật tài khoản thất bại");
 					console.log(res);
 				}
 			});
 		}
 
-		function saveUser(formData) {
+		function saveUser(data) {
 			$.ajax({
-				url: '/users',
+				url: '/api/users',
 				type: 'POST',
-				data: formData,
-				contentType: false,
-				processData: false,
+				contentType: 'application/json',
+				data: JSON.stringify(data),
+				dataType: 'json',
 				success: function (res) {
 					alert(res.message);
+					window.location.href = "/admin/users/list";
 				},
 				error: function (res) {
-					alert("Fail");
+					alert(res.responseJSON?.message || "Tạo tài khoản thất bại");
 				}
 			});
 		}

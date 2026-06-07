@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Estate Building</title>
+	<link rel="stylesheet" type="text/css" th:href="@{/style.css}" />
+	<link rel="icon" th:href="@{/}" type="image/x-icon">
+	<th:block th:include="_header"></th:block>
+</head>
+
+<body class="no-skin" style="font-family: 'Abel', sans-serif;">
+	<th:block th:include="_menu"></th:block>
+	<div class="page-wrapper">
+		<div class="intro text-center mb-5">
+			<div class="title-page">Liên hệ</div>
+			<div class="row">
+				<div class="col-xs-12 a-left">
+					<ul class="desc-intro">
+						<li class="home">
+							<a href="./ViewHome.html"><span style="color:#fff">Trang chủ</span></a>
+							<span class="mx-1" style="color:#fff"> / </span>
+						</li>
+						<li class="intro-item"><span>Liên hệ</span></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<!-- CONTENT  -->
+		<div class="map">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div class="google-map margin-bottom-30">
+							<div class="maps_iframe">
+								<iframe
+									src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d10943.848976195668!2d105.51994868282964!3d21.01252561722872!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135abc60e7d3f19%3A0x2be9d7d0b5abcbf4!2zVHLGsOG7nW5nIMSQ4bqhaSBo4buNYyBGUFQgSMOgIE7hu5lp!5e0!3m2!1svi!2s!4v1751197402710!5m2!1svi!2s"
+									width="600" height="450" style="width:100%; border:0;" allowfullscreen loading="lazy"
+									referrerpolicy="no-referrer-when-downgrade"></iframe>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="box-lienhe mt-5">
+			<div class="container">
+				<div class="row">
+					<div class="col-12 col-md-6">
+						<h2 class="title-lienhe"><strong>Công ty cổ phần bất động sản SkyLand</strong></h2>
+						<div class="desc-lienhe">
+							<p>Được thành lập vào ngày 20/08/2008 với niềm đam mê và khát vọng thành công trong lĩnh vực
+								bất động sản. Nhờ chiến lược rõ ràng và hướng đi đúng, SkyLand đã nhanh chóng phát triển
+								và đạt được những thành công nhất định.</p>
+							<ul class="margin-bottom-15 link" style="list-style-type: none;">
+								<li>
+									<span class="block_fonticon"><i class="fa fa-map-marker icon-lienhe"></i></span>
+									<span class="title-li"> Khu CNC Hòa Lạc, Thạch Thất, Hà Nội</span>
+								</li>
+								<li>
+									<span class="block_fonticon"><i class="fa fa-mobile icon-lienhe"></i></span>
+									<span class="title-li">
+										Hotline: <a style="color: #434a6e;" class="fone" href="">0345004500</a>
+									</span>
+								</li>
+								<li>
+									<span class="block_fonticon"><i class="fa fa-envelope icon-lienhe"></i></span>
+									<span class="title-li">Email: <a style="color: #434a6e;" href="">youngxv2004@gmail.com</a></span>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="col-12 col-md-6">
+						<h2 class="title-lienhe"><strong>Liên hệ với chúng tôi</strong></h2>
+						<form id="contactForm" class="form-horizontal" method="POST">
+							<div class="form-group">
+								<div class="col-xs-6">
+									<input type="text" class="form-control" placeholder="Họ và tên" name="fullName">
+									<!--required-->
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-xs-6">
+									<input type="text" class="form-control" placeholder="Email" name="email">
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-xs-6">
+									<input type="text" class="form-control" placeholder="Số điện thoại" name="customerPhone">
+									<!--required-->
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-xs-6">
+									<input type="text" class="form-control" placeholder="Nhu cầu" name="demand">
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-xs-6">
+									<button type="submit" class="btn btn-primary px-4">
+										Gửi liên hệ
+									</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<th:block th:insert="~{_footer :: footer}"></th:block>
+	<th:block th:replace="~{admin/common/common-scripts :: jquery}"></th:block>
+	<script>
+		const contactForm = document.getElementById("contactForm");
+
+		function showError(input, message) {
+			removeError(input);
+
+			const error = document.createElement("small");
+			error.className = "error-message";
+			error.style.color = "red";
+			error.style.display = "block";
+			error.style.marginTop = "5px";
+			error.innerText = message;
+
+			input.parentElement.appendChild(error);
+			input.classList.add("is-invalid");
+		}
+
+		function removeError(input) {
+			const parent = input.parentElement;
+			const error = parent.querySelector(".error-message");
+
+			if (error) {
+				error.remove();
+			}
+
+			input.classList.remove("is-invalid");
+		}
+
+		function validateContactForm() {
+			let isValid = true;
+
+			const fullName = contactForm.querySelector("input[name='fullName']");
+			const phone = contactForm.querySelector("input[name='customerPhone']");
+
+			if (fullName.value.trim() === "") {
+				showError(fullName, "Vui lòng nhập họ và tên");
+				isValid = false;
+			} else {
+				removeError(fullName);
+			}
+
+			const phoneRegex = /^0\d{9}$/;
+
+			if (phone.value.trim() === "") {
+				showError(phone, "Vui lòng nhập số điện thoại");
+				isValid = false;
+			} else if (!phoneRegex.test(phone.value.trim())) {
+				showError(phone, "Số điện thoại không hợp lệ");
+				isValid = false;
+			} else {
+				removeError(phone);
+			}
+
+			return isValid;
+		}
+
+		contactForm.addEventListener("submit", function (e) {
+			e.preventDefault();
+
+			if (!validateContactForm()) {
+				return;
+			}
+
+			const formData = {
+				name: contactForm.querySelector("input[name='fullName']").value.trim(),
+				email: contactForm.querySelector("input[name='email']").value.trim(),
+				phone: contactForm.querySelector("input[name='customerPhone']").value.trim(),
+				demand: contactForm.querySelector("input[name='demand']").value.trim()
+			};
+
+			$.ajax({
+				url: "/api/customers",
+				type: "POST",
+				contentType: "application/json",
+				data: JSON.stringify(formData),
+				success: function (response) {
+					alert("Gửi liên hệ thành công!");
+					contactForm.reset();
+				},
+				error: function (xhr) {
+					alert("Gửi liên hệ thất bại. Vui lòng thử lại!");
+					console.log(xhr.responseText);
+				}
+			});
+		});
+	</script>
+
+</body>
+
+</html>

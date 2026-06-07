@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>Estate Building - User Management</title>
+	<title>Estate Building - Quản lý tài khoản</title>
 	<th:block th:replace="~{admin/common/header :: header}"></th:block>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -34,10 +34,10 @@
 				<div class="page-content container-fluid">
 					<div class="page-header">
 						<h1>
-							List Of Accounts
+							Danh sách tài khoản
 							<small>
 								<i class="ace-icon fa fa-angle-double-right"></i>
-								overview &amp; stats
+								tổng quan
 							</small>
 						</h1>
 					</div><!-- /.page-header -->
@@ -115,9 +115,9 @@
 											<th class="text-center">
 												<input type="checkbox" id="checkAll">
 											</th>
-											<th>User Name</th>
-											<th>Full Name</th>
-											<th>Phone</th>
+											<th>Tên đăng nhập</th>
+											<th>Họ và tên</th>
+											<th>Số điện thoại</th>
 											<th class="text-center">Thao tác</th>
 										</tr>
 									</thead>
@@ -126,12 +126,12 @@
 											<td class="text-center">
 												<input type="checkbox" name="checkList" th:value="${u.id}" class="check-box-element" />
 											</td>
-											<td th:text="${u.userName}"></td>
+											<td th:text="${u.username}"></td>
 											<td th:text="${u.fullName}"></td>
 											<td th:text="${u.phone}"></td>
 											<td class="text-center">
 												<sec:authorize access="hasRole('MANAGER')">
-													<a class="btn btn-sm btn-primary" th:href="@{|/admin/users/${u.userName}|}"
+													<a class="btn btn-sm btn-primary" th:href="@{|/admin/users/${u.username}|}"
 														title="Cập nhật người dùng">
 														<i class="fa fa-pencil-square-o"></i>
 													</a>
@@ -195,7 +195,7 @@
 
 		function deleteUser(data) {
 			$.ajax({
-				url: '/users',
+				url: '/api/users',
 				type: 'DELETE',
 				dataType: 'json',
 				contentType: 'application/json',
@@ -203,13 +203,18 @@
 				success: function (res) {
 					Swal.fire({
 						icon: 'success',
-						title: 'Đã xóa thành công'
+						title: res.message || 'Xóa tài khoản thành công'
 					}).then(() => {
 						window.location.href = "/admin/users/list";
 					});
 				},
 				error: function (res) {
 					console.log(res);
+					Swal.fire({
+						icon: 'error',
+						title: 'Xóa tài khoản thất bại',
+						text: res.responseJSON?.message || 'Đã xảy ra lỗi khi xóa tài khoản.'
+					});
 				}
 			});
 		}
