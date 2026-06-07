@@ -1,6 +1,7 @@
 package com.daizuongkk.building.config;
 
 import com.daizuongkk.building.security.CustomSuccessHandler;
+import com.daizuongkk.building.service.impl.CustomOAuth2UserService;
 import com.daizuongkk.building.service.impl.CustomOidcUserService;
 import com.daizuongkk.building.service.impl.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,8 @@ public class WebSecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(
 			HttpSecurity http,
-			CustomOidcUserService oidcUserService) throws Exception {
+			CustomOidcUserService oidcUserService,
+			CustomOAuth2UserService customOAuth2UserService) throws Exception {
 
 		http
 				.csrf(csrf -> csrf.disable())
@@ -98,7 +100,7 @@ public class WebSecurityConfig {
 
 				.oauth2Login(oauth2 -> oauth2
 						.loginPage("/admin/login")
-						.userInfoEndpoint(info -> info.oidcUserService(oidcUserService))
+						.userInfoEndpoint(info -> info.oidcUserService(oidcUserService).userService(customOAuth2UserService))
 						.successHandler(myAuthenticationSuccessHandler())
 						.failureUrl("/admin/login?incorrectAccount")
 						.permitAll())
