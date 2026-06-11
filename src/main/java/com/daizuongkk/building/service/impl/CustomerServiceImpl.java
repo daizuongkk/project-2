@@ -108,7 +108,7 @@ public class CustomerServiceImpl implements CustomerService {
 		for (User u : staffs) {
 			StaffResponse staffResponse = new StaffResponse();
 			staffResponse.setId(u.getId());
-			staffResponse.setStaffName(u.getFullName());
+			staffResponse.setStaffName(u.getUsername());
 			if (assignedCustomer.contains(u.getId())) {
 				staffResponse.setChecked("checked");
 			}

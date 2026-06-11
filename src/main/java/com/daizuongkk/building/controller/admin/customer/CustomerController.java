@@ -1,4 +1,4 @@
-package com.daizuongkk.building.controller.admin;
+package com.daizuongkk.building.controller.admin.customer;
 
 import com.daizuongkk.building.service.TransactionService;
 import org.springframework.stereotype.Controller;

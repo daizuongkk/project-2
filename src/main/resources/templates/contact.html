@@ -192,7 +192,12 @@
 					contactForm.reset();
 				},
 				error: function (xhr) {
-					alert("Gửi liên hệ thất bại. Vui lòng thử lại!");
+					const message =
+						xhr.responseJSON?.message ||
+						xhr.responseJSON?.error ||
+						"Gửi liên hệ thất bại. Vui lòng thử lại!";
+
+					alert(message);
 					console.log(xhr.responseText);
 				}
 			});

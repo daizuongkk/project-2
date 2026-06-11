@@ -106,7 +106,7 @@ public class BuildingServiceImpl implements BuildingService {
 		for (User u : staffs) {
 			StaffResponse staffResponse = new StaffResponse();
 			staffResponse.setId(u.getId());
-			staffResponse.setStaffName(u.getFullName());
+			staffResponse.setStaffName(u.getUsername());
 			if (assignedBuilding.contains(u.getId())) {
 				staffResponse.setChecked("checked");
 			}

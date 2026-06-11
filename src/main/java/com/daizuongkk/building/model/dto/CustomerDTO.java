@@ -30,6 +30,5 @@ public class CustomerDTO {
 
 	private String demand;
 
-	@NotBlank(message = "Trạng thái không được để trống")
 	private String status;
 }
