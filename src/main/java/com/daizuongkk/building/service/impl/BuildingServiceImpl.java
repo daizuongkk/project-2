@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.daizuongkk.building.builder.BuildingSearchBuilder;
@@ -154,15 +153,6 @@ public class BuildingServiceImpl implements BuildingService {
 	@Override
 	@Transactional
 	public BuildingDTO updateBuilding(BuildingDTO buildingDTO) {
-
-		if (AuthUtils.getAuthorities().contains(SystemConstant.STAFF_ROLE)) {
-			User staff = userService.getUserByUsername(AuthUtils.getCurrentUsername());
-			if (staff.getBuildings() == null
-					|| staff.getBuildings().stream().noneMatch(b -> b.getId().equals(buildingDTO.getId()))) {
-				throw new AccessDeniedException("Không có quyền cập nhật tòa nhà");
-			}
-
-		}
 
 		if (buildingDTO.getId() == null)
 			throw new InvalidRequestArgumentException("Mã tòa nhà không hợp lệ");

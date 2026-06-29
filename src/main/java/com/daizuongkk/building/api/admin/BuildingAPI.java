@@ -46,7 +46,7 @@ public class BuildingAPI {
 		ResponseDTO responseDTO = new ResponseDTO();
 		buildingService.create(request);
 		responseDTO.setMessage("Tạo tòa nhà thành công");
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseDTO);
+		return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 	}
 
 	@DeleteMapping("/{ids}")
